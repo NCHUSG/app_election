@@ -11,7 +11,18 @@
 |
 */
 
-Route::get('/', function()
-{
-	return View::make('hello');
+Route::get('/',function(){
+	return View::make('info');
 });
+
+Route::get('/regis/{type}',
+	array(
+		'as' => 'step0',
+		'uses' => 'regis@form')
+	);
+
+Route::get('/regis/{type}',
+	array(
+		'as' => 'step1',
+		'uses' => 'regis@form')
+	);
