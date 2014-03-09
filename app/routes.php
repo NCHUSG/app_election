@@ -21,8 +21,20 @@ Route::get('/regis/{type}',
 		'uses' => 'regis@form')
 	);
 
-Route::get('/regis/{type}',
+Route::post('/regis/{type}',
 	array(
 		'as' => 'step1',
-		'uses' => 'regis@form')
+		'uses' => 'regis@form_sent')
+	);
+
+Route::get('/modify',
+	array(
+		'as' => 'modify0',
+		'uses' => 'modify@form')
+	);
+
+Route::post('/modify',
+	array(
+		'as' => 'modify1',
+		'uses' => 'regis@form_sent')
 	);

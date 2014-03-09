@@ -1,11 +1,6 @@
 <?php
 class regis extends BaseController {
 
-    public function info()
-    {
-        return View::make('info');
-    }
-
     public function form($type)
     {
         //$form = Form::model($user, array('route' => array('user.update', $user->id)));

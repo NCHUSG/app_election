@@ -15,7 +15,14 @@ class CreateCandidateTable extends Migration {
         Schema::create('candidate', function($table)
         {
             $table->increments('id'); // Primary key 'id', 照片 src will be as the same as this
-            $table->integer('regis_type'); // 1:學生會正副會長 2:學生代表 3:系總幹事
+            $table->integer('regis_type'); // 0:學生會會長 1:學生會副會長 2:學生代表 3:系總幹事
+
+            $table->integer('type_data');
+            // 這個欄位的值的意義要看 regis_type:
+            //     regis_type = 0 => 對應副會長的 id
+            //     regis_type = 1 => 對應會長的 id
+            //     regis_type = 2 => 空值
+            //     regis_type = 3 => 系所
 
             $table->string('name', 10); // 姓名
             $table->boolean('sex'); // 性別，男生為true、女生為false

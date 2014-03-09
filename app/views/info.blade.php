@@ -79,14 +79,13 @@
                     <div class="row">
                         <h2 class="text_emphsis text-center"><strong>登記參選</strong></h2>
                     </div>
-                    <div class="row text-center">
-                        <div class="btn-group btn-group-ms">
-                            <button type="button" class="btn btn-primary">學生會正副會長</button>
-                            <button type="button" class="btn btn-success">學生代表</button>
-                            <button type="button" class="btn btn-info">系總幹事</button>
-                        </div>
-                    </div>
-                    
+
+
+                        <a href="{{ route('step0',1); }}"><button type="button" class="btn btn-primary btn-lg btn-block btn-sm">學生會正副會長</button></a>
+                        <a href="{{ route('step0',2); }}"><button type="button" class="btn btn-success btn-lg btn-block btn-sm">學生代表</button></a>
+                        <a href="{{ route('step0',3); }}"><button type="button" class="btn btn-info btn-lg btn-block btn-sm">系總幹事</button></a>
+                        <a href="{{ route('modify0'); }}"><button type="button" class="btn btn-warning btn-lg btn-block btn-sm">修改已登記資料</button></a>
+
                 </div>
             </div>
         </div>
