@@ -5,7 +5,7 @@
     <title>三合一選舉登記</title>
 
     <script type="text/javascript" src="http://res.nchusg.org/nav/nav.js"></script>
-
+    <script type="text/javascript" src="http://res.nchusg.org/js/jquery-1.10.2.min.js"></script>
 
     <script>
         rs_nav.load({
@@ -51,7 +51,7 @@
 </head>
 <body>
     <div class="container">
-        <h1 class="box_bg text-center text_emphsis" id="main_title"><strong>三合一選舉登記</strong></h1>
+        <h1 class="box_bg text-center text_emphsis" id="main_title"><strong><a href="{{route('index');}}">三合一選舉登記</a></strong></h1>
         @yield('content')
     </div>
 </body>

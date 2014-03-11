@@ -7,5 +7,6 @@ composer.lock
 .DS_Store
 Thumbs.db
 
-/app/config/app.php
 /app/config/database.php
+
+/public/img/upload/*

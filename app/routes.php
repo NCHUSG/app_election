@@ -11,19 +11,26 @@
 |
 */
 
-Route::get('/',function(){
-	return View::make('info');
-});
+Route::get('/',
+	array(
+		'as' => 'index',
+		'uses' => 'intro@main')
+	);
+
+Route::get('/test',array(
+		'as' => 'test',
+		'uses' => 'regis@test')
+	);
 
 Route::get('/regis/{type}',
 	array(
-		'as' => 'step0',
+		'as' => 'regis0',
 		'uses' => 'regis@form')
 	);
 
-Route::post('/regis/{type}',
+Route::post('/regis',
 	array(
-		'as' => 'step1',
+		'as' => 'regis1',
 		'uses' => 'regis@form_sent')
 	);
 
@@ -36,5 +43,5 @@ Route::get('/modify',
 Route::post('/modify',
 	array(
 		'as' => 'modify1',
-		'uses' => 'regis@form_sent')
+		'uses' => 'modify@form_sent')
 	);

@@ -19,19 +19,18 @@ class CreateCandidateTable extends Migration {
 
             $table->integer('type_data');
             // 這個欄位的值的意義要看 regis_type:
-            //     regis_type = 0 => 對應副會長的 id
+            //     regis_type = 0 => 空值
             //     regis_type = 1 => 對應會長的 id
             //     regis_type = 2 => 空值
-            //     regis_type = 3 => 系所
+            //     regis_type = 3 => 空值
 
-            $table->string('name', 10); // 姓名
-            $table->boolean('sex'); // 性別，男生為true、女生為false
-            $table->integer('depart'); // 系所
-            $table->integer('grade'); // 年級
-            $table->longText('exp'); // 經歷
-            $table->longText('politics'); // 政見
-            $table->string('phone', 10); // 電話
-            $table->string('email'); // 常用電子信箱
+            $table->string('name', 20); // 姓名
+            $table->tinyInteger('sex'); // 性別，男生為1、女生為0
+            $table->string('depart',23); // 系級
+            $table->string('exp',300); // 經歷
+            $table->string('politics',300); // 政見
+            $table->string('phone',10); // 電話
+            $table->string('email',50); // 常用電子信箱
             $table->boolean('agree'); // 個資法同意
 
             $table->string('code', 10); // 驗證碼可進行資料修改

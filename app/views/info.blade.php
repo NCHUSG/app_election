@@ -80,11 +80,10 @@
                         <h2 class="text_emphsis text-center"><strong>登記參選</strong></h2>
                     </div>
 
-
-                        <a href="{{ route('step0',1); }}"><button type="button" class="btn btn-primary btn-lg btn-block btn-sm">學生會正副會長</button></a>
-                        <a href="{{ route('step0',2); }}"><button type="button" class="btn btn-success btn-lg btn-block btn-sm">學生代表</button></a>
-                        <a href="{{ route('step0',3); }}"><button type="button" class="btn btn-info btn-lg btn-block btn-sm">系總幹事</button></a>
-                        <a href="{{ route('modify0'); }}"><button type="button" class="btn btn-warning btn-lg btn-block btn-sm">修改已登記資料</button></a>
+                        <a href="{{ route('regis0',0); }}" type="button" class="btn btn-primary btn-lg btn-block btn-sm">學生會正副會長</a>
+                        <a href="{{ route('regis0',2); }}" type="button" class="btn btn-success btn-lg btn-block btn-sm">學生代表</a>
+                        <a href="{{ route('regis0',3); }}" type="button" class="btn btn-info btn-lg btn-block btn-sm" >系總幹事</a>
+                        <a href="{{ route('modify0'); }}" type="button" class="btn btn-warning btn-lg btn-block btn-sm">修改已登記資料</a>
 
                 </div>
             </div>
