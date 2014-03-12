@@ -91,6 +91,5 @@ return array(
 	*/
 
 	'PhotoTempLocation' => public_path()."/img/upload/temp/",
-
 );
 
