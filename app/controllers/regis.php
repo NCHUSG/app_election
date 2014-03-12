@@ -63,7 +63,59 @@ class regis extends BaseController {
                 $this->photo_to_upload($photo_tmp,$id);
             }
 
+            $this->view_var['info']=$this->app_const['regis_success_info'];
             return View::make('regisOK',$this->view_var);
+        } catch (Exception $e) {
+            $this->view_var['message']=$e->getMessage();
+            return View::make('failed',$this->view_var);
+        }
+    }
+
+    public function modify()
+    {
+        try {
+            
+            if(!Input::has('code'))
+                $step=0; // step 0 : enter the code
+            else
+                if(Input::has('id'))
+                    $step=2; // step 2 : process the modify request
+                else
+                    $step=1; // step 1 : show modifiable data
+
+            $this->printvar($step,'step');
+            
+            switch ($step) {
+                case 0:
+                    return View::make('enterCode',$this->view_var);
+                    break;
+                case 1:
+                    $this->view_var['candidate']=candidate::where('code', '=',Input::get('code'))->firstOrFail();
+                    $this->view_var['allowModify']=$this->app_const['allowModify'];
+                    return View::make('modify',$this->view_var);
+                    break;
+                case 2:
+                    $candidate=Input::get('candidate');
+                    $allowModify=$this->app_const['allowModify'];
+                    $validationRule=array();
+                    $modify=array();
+                    foreach ($allowModify as $key => $value) {
+                        if($value){
+                            $validationRule[$key]=$this->app_const['validationRule'][$key];
+                            $modify[$key]=$candidate[$key];
+                        }
+                    }
+                    $this->valid_core($modify,$validationRule);
+                    $candidate_db=candidate::where('code', '=',Input::get('code'))->firstOrFail();
+                    $candidate_db->update($modify);
+                    $this->view_var['candidate'][]=$candidate_db;
+                    $this->view_var['info']=$this->app_const['modify_success_info'];
+                    return View::make('regisOK',$this->view_var);
+                    break;
+                default:
+                    throw new Exception("不明的錯誤！");
+                    break;
+            }
         } catch (Exception $e) {
             $this->view_var['message']=$e->getMessage();
             return View::make('failed',$this->view_var);
@@ -78,35 +130,42 @@ class regis extends BaseController {
 
         // Validate start :
 
-        $validReg=$this->app_const['validationRegex'];
-        $this->printvar($candidate,"candidate before validate");
-        foreach($validReg as $key => $reg){
-            if(!isset($candidate[$key]))
-                $candidate[$key]='';
-            if(preg_match($reg,$candidate[$key])==0){
-                $error_str=$this->app_const['col2name'][$key].'的輸入有誤：「'.$candidate[$key]."」";
-                if(!$this->debug_mode)
-                    throw new Exception($error_str);
-                else
-                    $this->printvar($error_str,"Exception!!");;
-            }
-        }
-        $this->printvar($candidate,"candidate after validate");
+        // validation using regex only :
+        // $validReg=$this->app_const['validationRegex'];
+        // $this->printvar($candidate,"candidate before validate");
+        // foreach($validReg as $key => $reg){
+        //     if(!isset($candidate[$key]))
+        //         $candidate[$key]='';
+        //     if(preg_match($reg,$candidate[$key])==0){
+        //         $error_str=$this->app_const['col2name'][$key].'的輸入有誤：「'.$candidate[$key]."」";
+        //         if(!$this->debug_mode)
+        //             throw new Exception($error_str);
+        //         else
+        //             $this->printvar($error_str,"Exception!!");;
+        //     }
+        // }
+        $this->printvar($candidate,"candidate");
 
-        // Validate completed.
-        
-        // the user has agreed
-        if($candidate['agree']==='true')
-            $candidate['agree']=1;
+        // has the user agreed?
+        if(isset($candidate['agree']))
+            if($candidate['agree']==='yes')
+                $candidate['agree']=1;
+            else
+                throw new Exception("請勾選同意！");
         else
             throw new Exception("請勾選同意！");
+
+        // validation using laravel's object :
+        $this->valid_core($candidate,$this->app_const['validationRule']);
+
+        // Validate completed.
 
         // process textarea content:
         $candidate['politics']=nl2br($candidate['politics']);
         $candidate['exp']=nl2br($candidate['exp']);
 
         // generate code:
-        $candidate['code']=hash('crc32b', $candidate['name'].$candidate['depart'].$candidate['phone'].$candidate['email']);
+        $candidate['code']=hash('crc32b', $candidate['name'].$candidate['depart'].$candidate['phone'].$candidate['email'].$this->time_stamp);
 
         $this->printvar($candidate,"candidate final");
 
@@ -118,6 +177,29 @@ class regis extends BaseController {
         $this->view_var['candidate'][]=$candidate_db;
         $this->printvar($candidate_db,'candidate_db');
         return $candidate_db->id;
+    }
+
+    private function valid_core($toBe_valid,$rule)
+    {
+        $validator = Validator::make($toBe_valid,$rule,$this->app_const['validationMsg']); //幹，太神威了，我之前那些是在寫三小
+        $this->printvar($validator->fails(),"validator_failed");
+        $this->printvar($validator->messages(),"validator_messages");
+        if($validator->fails()){
+            $err_obj=$validator->messages();
+            $err_obj->setFormat(':key.:message');
+            
+            $err_arr=$err_obj->all();
+            $err_msg='';
+
+            $this->printvar($err_arr,"err_arr");
+
+            foreach ($err_arr as $key => $value) {
+                $tmp=explode('.',$value);
+                $err_msg.= "欄位「".$this->app_const['col2name'][$tmp[0]]."」的資料有誤：".$tmp[1]."<br>";
+            }
+            $this->printvar($err_msg,"err_msg");
+            throw new Exception($err_msg);
+        }
     }
 
     private function photo_valid_and_to_tmp($type)

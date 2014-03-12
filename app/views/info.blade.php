@@ -1,6 +1,7 @@
 @extends('layout')
 
 @section('content')
+    <div class="alert alert-warning"><h1>請注意！</h1><h2>本網站線在正在砍檔封測中，目前上面的資料都是測試用資料，正式開始報名時會將所有資料清除！</h2></div>
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
             <div class="jumbotron box_bg box_bg_">

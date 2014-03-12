@@ -1,7 +1,7 @@
 @extends('layout')
 
 @section('content')
-    <div class="alert alert-success">申請成功！ 將在下方提供驗證碼提供日後修正</div>
+    <div class="alert alert-success">{{$info;}}</div>
     @foreach ($candidate as $element)
         <div class="panel panel-default">
 	        <div class="panel-heading">

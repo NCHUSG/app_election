@@ -37,11 +37,11 @@ Route::post('/regis',
 Route::get('/modify',
 	array(
 		'as' => 'modify0',
-		'uses' => 'modify@form')
+		'uses' => 'regis@modify')
 	);
 
 Route::post('/modify',
 	array(
 		'as' => 'modify1',
-		'uses' => 'modify@form_sent')
+		'uses' => 'regis@modify')
 	);

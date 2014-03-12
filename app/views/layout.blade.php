@@ -7,6 +7,8 @@
     <script type="text/javascript" src="http://res.nchusg.org/nav/nav.js"></script>
     <script type="text/javascript" src="http://res.nchusg.org/js/jquery-1.10.2.min.js"></script>
 
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <script>
         rs_nav.load({
             complete:function(){},
