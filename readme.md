@@ -23,6 +23,7 @@
         cp app/config/app.example.php app/config/app.php
         cp app/config/database.example.php app/config/database.php
         cp app/config/packages/sb89/recaptcha/config.example.php app/config/packages/sb89/recaptcha/config.php
+        cp /example.htaccess /.htaccess
 
 6. add values to some required field in config files
 
@@ -35,6 +36,9 @@
         vim app/config/packages/sb89/recaptcha/config.php
         //go to https://www.google.com/recaptcha to get public_key and private_key
 
+        vim .htaccess
+        //replace "to/the/app" to the url path for this app
+
 7. setup composer
 
         php composer.phar install
@@ -43,8 +47,7 @@
 
         php artisan migrate
 
-9. You are all set!
-
+9. if there are no error message occurs in the process, you are all set! open the browser to check it out!
 
 ## what repos and packages implemented
 

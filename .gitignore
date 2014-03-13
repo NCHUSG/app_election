@@ -12,3 +12,5 @@ Thumbs.db
 
 /public/img/upload/*
 /app/config/packages/sb89/recaptcha/config.php
+
+/.htaccess
