@@ -49,7 +49,7 @@
                 <div class="row">　</div>
                 <div class="input-group">
                     <span class="input-group-addon">系級</span>
-                    <input type="text" class="form-control" placeholder="系級，包含學系完整名稱和幾年級，例如：資訊科學與工程學系二年級" name="candidate[{{$type}}][depart]"></input>
+                    <input type="text" class="form-control" placeholder="系級，包含學系完整名稱和幾年級，例如：資訊科學與工程學系105級" name="candidate[{{$type}}][depart]"></input>
                 </div> 
                 <div class="row">　</div>
                 <div class="form-group">
@@ -75,11 +75,28 @@
             </div>
         </div>
     @endfor
+        @if($enable_recaptcha)
+        <div class="alert alert-danger">
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                <h3 class="text-center">不好意思，請證明你是人類。</h3>
+                <p class="text-center">
+                    為了防止惡意濫用，使用圖片辨識驗證，請見諒！
+                </p>
+                <p class="text-center">
+                    <a href="http://zh.wikipedia.org/wiki/%E9%AA%8C%E8%AF%81%E7%A0%81" target="_blank">告訴我為何這樣可以防止惡意濫用</a>
+                </p>
+                
+            </div>
+            <div class="visible-xs col-xs-2">　</div>
+            <div style="col-xs-9 col-sm-6 col-md-6 col-lg-6">
+                <div style="display:inline-block">
+                    {{Form::recaptcha()}}
+                </div>
+            </div>
+        </div>
+        @endif
         <div>
             <button type="submit" class="btn btn-primary btn-lg btn-block">填完了，送出！ (送出後會給予一組驗證碼提供修改經歷和政見)</button>
-        </div>
-        <div>
-            
         </div>
     </form>
 @stop

@@ -40,7 +40,7 @@ return array(
     'validationRegex' => array(
         'name'     => '/^([A-Za-z \x{4e00}-\x{9fff}]){2,20}$/u',
         'sex'      => '/^(1|0)$/',
-        'depart'   => '/^\p{Han}{3,20}[一二三四五]年級$/u',
+        'depart'   => '/^\p{Han}{3,20}\d{2,3}級$/u', // old '/^\p{Han}{3,20}[一二三四五]年級$/u',
         'exp'      => '/^.{2,300}$/us',
         'politics' => '/^.{2,300}$/us',
         'phone'    => '/^\d{10}$/',
@@ -60,7 +60,7 @@ return array(
     'validationRule' => array(
         'name'     => array('required', 'regex:/^([A-Za-z \x{4e00}-\x{9fff}]){2,20}$/u'),
         'sex'      => array('required', 'regex:/^(1|0)$/'),
-        'depart'   => array('required', 'regex:/^\p{Han}{3,20}[一二三四五]年級$/u'),
+        'depart'   => array('required', 'regex:/^\p{Han}{3,20}\d{2,3}級$/u'),
         'exp'      => array('required', 'regex:/^.{2,300}$/us'),
         'politics' => array('required', 'regex:/^.{2,300}$/us'),
         'phone'    => array('required', 'regex:/^\d{10}$/'),
@@ -94,21 +94,21 @@ return array(
     */
 
     'allowModify' => array(
-        'name'     => true,
-        'sex'      => true,
-        'depart'   => true,
-        'exp'      => true,
-        'politics' => true,
-        'phone'    => true,
-        'email'    => true,
-
-        // 'name'     => false,
-        // 'sex'      => false,
-        // 'depart'   => false,
+        // 'name'     => true,
+        // 'sex'      => true,
+        // 'depart'   => true,
         // 'exp'      => true,
         // 'politics' => true,
-        // 'phone'    => false,
-        // 'email'    => false,
+        // 'phone'    => true,
+        // 'email'    => true,
+
+        'name'     => false,
+        'sex'      => false,
+        'depart'   => false,
+        'exp'      => true,
+        'politics' => true,
+        'phone'    => false,
+        'email'    => false,
     ),
 
     /*
@@ -132,6 +132,17 @@ return array(
     */
    
     'modify_success_info' => '修改成功！ 請查照',
+
+    /*
+    |--------------------------------------------------------------------------
+    | enable_recaptcha
+    |--------------------------------------------------------------------------
+    | 
+    | 是否要啟用 google recaptcha 功能 (圖形驗證)
+    | 
+    */
+    
+    'enable_recaptcha' => true,
 
     /*
     |--------------------------------------------------------------------------

@@ -39,6 +39,7 @@ class regis extends BaseController {
                 $this->view_var['NumberOfCandidate']=1;
 
             $this->view_var['type']=$type;
+            $this->view_var['enable_recaptcha']=$this->app_const['enable_recaptcha'];
             
             return View::make('form',$this->view_var);
         } catch (Exception $e) {
@@ -51,6 +52,8 @@ class regis extends BaseController {
     {
         try {
             $canditates=Input::get('candidate');
+
+            $this->recaptcha_valid_if_enabled();
 
             $id=0;
             foreach ($canditates as $key => $value) {
@@ -87,10 +90,19 @@ class regis extends BaseController {
             
             switch ($step) {
                 case 0:
+                    $this->view_var['enable_recaptcha']=$this->app_const['enable_recaptcha'];
                     return View::make('enterCode',$this->view_var);
                     break;
                 case 1:
-                    $this->view_var['candidate']=candidate::where('code', '=',Input::get('code'))->firstOrFail();
+                    $this->recaptcha_valid_if_enabled();
+
+                    try {
+                        $this->view_var['candidate']=candidate::where('code', '=',Input::get('code'))->firstOrFail();
+                    } catch (Exception $e) {
+                        if(strpos($e->getMessage(),"No query results")!==false)
+                            throw new Exception("錯誤的驗證碼！");
+                    }
+                    
                     $this->view_var['allowModify']=$this->app_const['allowModify'];
                     return View::make('modify',$this->view_var);
                     break;
@@ -199,6 +211,17 @@ class regis extends BaseController {
             }
             $this->printvar($err_msg,"err_msg");
             throw new Exception($err_msg);
+        }
+    }
+
+    private function recaptcha_valid_if_enabled(){
+        if($this->app_const['enable_recaptcha']){
+            $recaptcha = Validator::make(
+                array('recaptcha' => Input::get('recaptcha_response_field')),
+                array('recaptcha' => 'required|recaptcha')
+            );
+            if ($recaptcha->fails())
+                throw new Exception("錯誤的圖片驗證！");
         }
     }
 
