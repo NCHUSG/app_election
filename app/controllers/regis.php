@@ -21,8 +21,8 @@ class regis extends BaseController {
 
     public function test()
     {
-        $this->view_var['candidate']=candidate::where('id', '=', 16)->take(1)->get();
-        return View::make('regisOK',$this->view_var);
+        //$this->view_var['candidate']=candidate::where('id', '=', 16)->take(1)->get();
+        return 'timestamp:'.time().'<br>now:'.date(DATE_RFC2822)."<br>start:".date(DATE_RFC2822,1395014400);
 
         //return hash('crc32b','邱冠喻0970900813資訊科學與工程學系三年級');
     }
@@ -30,6 +30,7 @@ class regis extends BaseController {
     public function form($type)
     {
         try {
+            $this->time_check();
             //$form = Form::model($user, array('route' => array('user.update', $user->id)));
             if($type!=0 && $type!=2 && $type!=3)
                 throw new Exception("Wrong type!");
@@ -51,6 +52,8 @@ class regis extends BaseController {
     public function form_sent()
     {
         try {
+            $this->time_check();
+
             $canditates=Input::get('candidate');
 
             $this->recaptcha_valid_if_enabled();
@@ -78,6 +81,8 @@ class regis extends BaseController {
     {
         try {
             
+            $this->time_check();
+
             if(!Input::has('code'))
                 $step=0; // step 0 : enter the code
             else
@@ -315,6 +320,12 @@ class regis extends BaseController {
         echo '<code>';
         var_dump($var);
         echo "</code><br>";
+    }
+
+    private function time_check()
+    {
+        if(time()<=$this->app_const['Timestamp_allowRegis'])
+            throw new Exception("報名時間還沒到喔，報名將開始於：".date(DATE_RFC2822,$this->app_const['Timestamp_allowRegis'])."<br>現在時間是：".date(DATE_RFC2822,time()));
     }
 
 }

@@ -1,7 +1,15 @@
 @extends('layout')
 
 @section('content')
-    <div class="alert alert-warning"><h1>請注意！</h1><h2>本網站線在正在砍檔封測中，目前上面的資料都是測試用資料，正式開始報名時會將所有資料清除！</h2></div>
+        <div class="alert box_bg box_bg_">
+            <div class="row">
+                <h2 class="text_emphsis text-center"><strong>登記參選</strong></h2>
+            </div>
+                <a href="{{ route('regis0',0); }}" type="button" class="btn btn-primary btn-lg btn-block btn-sm">學生會正副會長</a>
+                <a href="{{ route('regis0',2); }}" type="button" class="btn btn-success btn-lg btn-block btn-sm">學生代表</a>
+                <a href="{{ route('regis0',3); }}" type="button" class="btn btn-info btn-lg btn-block btn-sm" >系總幹事</a>
+                <a href="{{ route('modify0'); }}" type="button" class="btn btn-warning btn-lg btn-block btn-sm">修改已登記資料</a>
+        </div>
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
             <div class="jumbotron box_bg box_bg_">
@@ -75,27 +83,6 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="alert box_bg box_bg_">
-                    <div class="row">
-                        <h2 class="text_emphsis text-center"><strong>登記參選</strong></h2>
-                    </div>
-
-                        <a href="{{ route('regis0',0); }}" type="button" class="btn btn-primary btn-lg btn-block btn-sm">學生會正副會長</a>
-                        <a href="{{ route('regis0',2); }}" type="button" class="btn btn-success btn-lg btn-block btn-sm">學生代表</a>
-                        <a href="{{ route('regis0',3); }}" type="button" class="btn btn-info btn-lg btn-block btn-sm" >系總幹事</a>
-                        <a href="{{ route('modify0'); }}" type="button" class="btn btn-warning btn-lg btn-block btn-sm">修改已登記資料</a>
-
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="panel panel-primary">
-        <div class="panel-heading">參選情況</div>
-        <div class="panel-body">
-            
-        </div>
         </div>
     </div>
 @stop

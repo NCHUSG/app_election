@@ -10,7 +10,7 @@
             white 1.4px -1.4px, white -1.4px 1.4px;
         }
     </style>
-    <form role="form" action="{{route('regis1')}}" method="post" enctype="multipart/form-data">
+    <form id="regis_form" role="form" action="{{route('regis1')}}" method="post" enctype="multipart/form-data">
     @for ($i = 1; $i <= $NumberOfCandidate; $i++,$type++)
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -20,7 +20,7 @@
                 <div class="input-group">
                     <label for="photo">照片 (看得清楚臉，以大頭照為主)</label>
                     <input type="file" id="photo" name="{{$type}}">
-                    <p class="help-block">只接受 jpg,jpeg,png 之格式，且檔案不可超過50KB</p>
+                    <p class="help-block">只接受 jpg,jpeg,png 之格式，且檔案不可超過100KB</p>
                 </div>
                 <div class="row">　</div>
                 <div class="input-group">
@@ -28,13 +28,16 @@
                     <input type="text" class="form-control" placeholder="姓名" name="candidate[{{$type}}][name]"></input>
                 </div>
                 <div class="row">　</div>
-                <div class="btn-group btn-group-justified" data-toggle="buttons">
-                        <label class="btn btn-primary">
-                            <input type="radio" name="candidate[{{$type}}][sex]" value="1">男
-                        </label>
-                        <label class="btn btn-danger">
-                            <input type="radio" name="candidate[{{$type}}][sex]" value="0">女
-                        </label>
+                <div class="btn-group" data-toggle="buttons">
+                    <label class="btn btn-default disabled" style="background: #E6E6E6; border: 1px solid #ccc; opacity: 1;">
+                        性別
+                    </label>
+                    <label class="btn btn-primary">
+                        <input type="radio" name="candidate[{{$type}}][sex]" value="1"> <i class="fa fa-male"></i>　男
+                    </label>
+                    <label class="btn btn-danger">
+                        <input type="radio" name="candidate[{{$type}}][sex]" value="0"> <i class="fa fa-female"></i>　女
+                    </label>
                 </div>
                 <div class="row">　</div>
                 <div class="input-group">
@@ -99,4 +102,17 @@
             <button type="submit" class="btn btn-primary btn-lg btn-block">填完了，送出！ (送出後會給予一組驗證碼提供修改經歷和政見)</button>
         </div>
     </form>
+
+    <script>
+        rs_nav.config.complete=function(){
+            // var a=$('form#regis_form');
+            // console.log(a);
+            // a.submit(function(e){
+            //     var data=$('form').serializeArray();
+            //     console.log(data);
+            //     e.preventDefault();
+            // });
+            // console.log(123);
+        };
+    </script>
 @stop

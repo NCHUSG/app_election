@@ -6,6 +6,7 @@
 
     <script type="text/javascript" src="http://res.nchusg.org/nav/nav.js"></script>
     <script type="text/javascript" src="http://res.nchusg.org/js/jquery-1.10.2.min.js"></script>
+    <link rel="stylesheet" href="{{asset('/css/font-awesome.min.css');}}">
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
