@@ -64,8 +64,8 @@ class regis extends BaseController {
                 $value['regis_type']=$key;
                 $value['type_data']=$id;
 
-                $id=$this->candidate_valid_and_add($value);
                 $photo_tmp=$this->photo_valid_and_to_tmp($key);
+                $id=$this->candidate_valid_and_add($value);
                 $this->photo_to_upload($photo_tmp,$id);
             }
 

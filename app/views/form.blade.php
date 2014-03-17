@@ -28,7 +28,7 @@
                     <input type="text" class="form-control" placeholder="姓名" name="candidate[{{$type}}][name]"></input>
                 </div>
                 <div class="row">　</div>
-                <div class="btn-group" data-toggle="buttons">
+                <div class="btn-group btn-radio-group" data-toggle="buttons">
                     <label class="btn btn-default disabled" style="background: #E6E6E6; border: 1px solid #ccc; opacity: 1;">
                         性別
                     </label>
@@ -105,14 +105,10 @@
 
     <script>
         rs_nav.config.complete=function(){
-            // var a=$('form#regis_form');
-            // console.log(a);
-            // a.submit(function(e){
-            //     var data=$('form').serializeArray();
-            //     console.log(data);
-            //     e.preventDefault();
-            // });
-            // console.log(123);
+           ('form#regis_form').submit(function(e){
+            //  $('div.btn-radio-group input.active')
+            });
+            console.log(123);
         };
     </script>
 @stop
