@@ -51,13 +51,13 @@
 	        	<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 	        		<div class="well">
 	        			<h2>經歷</h2>
-	        			<p>{{ $element->exp; }}</p>
+	        			<p>{{ nl2br($element->exp); }}</p>
 	        		</div>
 	        	</div>
 	        	<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 	        		<div class="well">
 	        			<h2>政見</h2>
-	        			<p>{{ $element->politics; }}</p>
+	        			<p>{{ nl2br($element->politics); }}</p>
 	        		</div>
 	        	</div>
         	</div>

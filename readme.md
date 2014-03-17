@@ -28,7 +28,7 @@
 6. add values to some required field in config files
 
         vim app/config/app.php
-        //required field: url and key
+        //required field: url, key, timezone
 
         vim app/config/database.php
         //required field: connections

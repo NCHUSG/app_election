@@ -10,14 +10,21 @@
             white 1.4px -1.4px, white -1.4px 1.4px;
         }
     </style>
-    <form role="form" action="{{route('modify1')}}" method="post">
-        <input type="hidden" name="id" value="{{$candidate->id;}}">
-        <input type="hidden" name="code" value="{{$candidate->code;}}">
+    <form role="form" action="{{route('modify1')}}" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="id" value="{{$candidate->id}}">
+        <input type="hidden" name="code" value="{{$candidate->code}}">
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title">{{ $const['type2name'][$candidate->regis_type]; }} {{$candidate->name}} - 修改資料</h3>
             </div>
             <div class="panel-body">
+                @if ($allowModifyPhoto)
+                    <div class="input-group">
+                        <label for="photo">照片 (看得清楚臉，以大頭照為主)</label>
+                        <input type="file" id="photo" name="photo">
+                        <p class="help-block">只接受 jpg,jpeg,png 之格式，且檔案不可超過100KB</p>
+                    </div>
+                @endif
                 @if ($allowModify['name'])
                     <div class="input-group">
                         <span class="input-group-addon">姓名</span>

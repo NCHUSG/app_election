@@ -22,7 +22,7 @@ class regis extends BaseController {
     public function test()
     {
         //$this->view_var['candidate']=candidate::where('id', '=', 16)->take(1)->get();
-        return 'timestamp:'.time().'<br>now:'.date(DATE_RFC2822)."<br>start:".date(DATE_RFC2822,1395014400);
+        return 'timestamp:'.time().'<br>now:'.date(DATE_RFC2822)."<br>start:".date(DATE_RFC2822,$this->app_const['Timestamp_allowRegis'])."<br>end:".date(DATE_RFC2822,$this->app_const['Timestamp_allowRegisEnd']);
 
         //return hash('crc32b','邱冠喻0970900813資訊科學與工程學系三年級');
     }
@@ -59,14 +59,18 @@ class regis extends BaseController {
             $this->recaptcha_valid_if_enabled();
 
             $id=0;
+            $photo_tmp=array();
             foreach ($canditates as $key => $value) {
-                
+                $this->valid($value,$this->app_const['validationRule']);
+                $photo_tmp[$key]=$this->photo_valid_and_to_tmp($key);
+            }
+
+            foreach ($canditates as $key => $value) {
                 $value['regis_type']=$key;
                 $value['type_data']=$id;
 
-                $photo_tmp=$this->photo_valid_and_to_tmp($key);
-                $id=$this->candidate_valid_and_add($value);
-                $this->photo_to_upload($photo_tmp,$id);
+                $id=$this->candidate_add($value);
+                $this->photo_to_upload($photo_tmp[$key],$id);
             }
 
             $this->view_var['info']=$this->app_const['regis_success_info'];
@@ -90,8 +94,6 @@ class regis extends BaseController {
                     $step=2; // step 2 : process the modify request
                 else
                     $step=1; // step 1 : show modifiable data
-
-            $this->printvar($step,'step');
             
             switch ($step) {
                 case 0:
@@ -101,17 +103,22 @@ class regis extends BaseController {
                 case 1:
                     $this->recaptcha_valid_if_enabled();
 
-                    try {
-                        $this->view_var['candidate']=candidate::where('code', '=',Input::get('code'))->firstOrFail();
-                    } catch (Exception $e) {
-                        if(strpos($e->getMessage(),"No query results")!==false)
-                            throw new Exception("錯誤的驗證碼！");
-                    }
+                    $candidate_db=candidate::where('code', '=',Input::get('code'));
+
+                    if($candidate_db->count() == 0)
+                        throw new Exception("錯誤的驗證碼！");
+
+                    $this->view_var['candidate']=$candidate_db->first();
                     
                     $this->view_var['allowModify']=$this->app_const['allowModify'];
+                    $this->view_var['allowModifyPhoto']=$this->app_const['allowModifyPhoto'];
                     return View::make('modify',$this->view_var);
                     break;
                 case 2:
+                    $candidate_db=candidate::whereRaw("code = '".Input::get('code')."' and id = ".Input::get('id'));
+                    if($candidate_db->count() == 0)
+                        throw new Exception("請勿亂來！");
+
                     $candidate=Input::get('candidate');
                     $allowModify=$this->app_const['allowModify'];
                     $validationRule=array();
@@ -122,9 +129,14 @@ class regis extends BaseController {
                             $modify[$key]=$candidate[$key];
                         }
                     }
-                    $this->valid_core($modify,$validationRule);
-                    $candidate_db=candidate::where('code', '=',Input::get('code'))->firstOrFail();
+                    $this->valid($modify,$validationRule);
+                    $candidate_db=$candidate_db->first();
                     $candidate_db->update($modify);
+
+                    try {
+                        $this->photo_to_upload($this->photo_valid_and_to_tmp('photo'),Input::get('id'));
+                    } catch (Exception $e) {}
+
                     $this->view_var['candidate'][]=$candidate_db;
                     $this->view_var['info']=$this->app_const['modify_success_info'];
                     return View::make('regisOK',$this->view_var);
@@ -139,68 +151,13 @@ class regis extends BaseController {
         }
     }
 
-    public function preview_img(){
-
-    }
-
-    private function candidate_valid_and_add($candidate){
-
-        // Validate start :
-
-        // validation using regex only :
-        // $validReg=$this->app_const['validationRegex'];
-        // $this->printvar($candidate,"candidate before validate");
-        // foreach($validReg as $key => $reg){
-        //     if(!isset($candidate[$key]))
-        //         $candidate[$key]='';
-        //     if(preg_match($reg,$candidate[$key])==0){
-        //         $error_str=$this->app_const['col2name'][$key].'的輸入有誤：「'.$candidate[$key]."」";
-        //         if(!$this->debug_mode)
-        //             throw new Exception($error_str);
-        //         else
-        //             $this->printvar($error_str,"Exception!!");;
-        //     }
-        // }
-        $this->printvar($candidate,"candidate");
-
-        // has the user agreed?
-        if(isset($candidate['agree']))
-            if($candidate['agree']==='yes')
-                $candidate['agree']=1;
-            else
-                throw new Exception("請勾選同意！");
-        else
-            throw new Exception("請勾選同意！");
-
-        // validation using laravel's object :
-        $this->valid_core($candidate,$this->app_const['validationRule']);
-
-        // Validate completed.
-
-        // process textarea content:
-        $candidate['politics']=nl2br($candidate['politics']);
-        $candidate['exp']=nl2br($candidate['exp']);
-
-        // generate code:
-        $candidate['code']=hash('crc32b', $candidate['name'].$candidate['depart'].$candidate['phone'].$candidate['email'].$this->time_stamp);
-
-        $this->printvar($candidate,"candidate final");
-
-        // add to db :
-
-        $candidate_db = candidate::create($candidate);
-        $candidate_db->save(); 
-
-        $this->view_var['candidate'][]=$candidate_db;
-        $this->printvar($candidate_db,'candidate_db');
-        return $candidate_db->id;
-    }
-
-    private function valid_core($toBe_valid,$rule)
+    private function valid($toBe_valid,$rule)
     {
         $validator = Validator::make($toBe_valid,$rule,$this->app_const['validationMsg']); //幹，太神威了，我之前那些是在寫三小
+        
         $this->printvar($validator->fails(),"validator_failed");
         $this->printvar($validator->messages(),"validator_messages");
+
         if($validator->fails()){
             $err_obj=$validator->messages();
             $err_obj->setFormat(':key.:message');
@@ -217,6 +174,26 @@ class regis extends BaseController {
             $this->printvar($err_msg,"err_msg");
             throw new Exception($err_msg);
         }
+    }
+
+    private function candidate_add($candidate){
+        if($candidate['agree']==='yes')
+            $candidate['agree']=1;
+        else
+            throw new Exception("請勾選同意！");
+
+        // generate code:
+        $candidate['code']=hash('crc32b', $candidate['name'].$candidate['depart'].$candidate['phone'].$candidate['email'].$this->time_stamp);
+
+        $this->printvar($candidate,"candidate final");
+
+        // add to db :
+        $candidate_db = candidate::create($candidate);
+        $candidate_db->save(); 
+
+        $this->view_var['candidate'][]=$candidate_db;
+        $this->printvar($candidate_db,'candidate_db');
+        return $candidate_db->id;
     }
 
     private function recaptcha_valid_if_enabled(){
@@ -300,8 +277,6 @@ class regis extends BaseController {
 
     private function photo_to_upload($photo_tmp,$id)
     {
-        // $tmp=explode(".",$photo_tmp);
-        // $ext=end($tmp);
         rename($photo_tmp,$this->app_const['PhotoLocation'].$id);
     }
 
@@ -326,6 +301,9 @@ class regis extends BaseController {
     {
         if(time()<=$this->app_const['Timestamp_allowRegis'])
             throw new Exception("報名時間還沒到喔，報名將開始於：".date(DATE_RFC2822,$this->app_const['Timestamp_allowRegis'])."<br>現在時間是：".date(DATE_RFC2822,time()));
+
+        if(time()>=$this->app_const['Timestamp_allowRegisEnd'])
+            throw new Exception("報名時間已經結束了喔，報名已經結束於：".date(DATE_RFC2822,$this->app_const['Timestamp_allowRegisEnd'])."<br>現在時間是：".date(DATE_RFC2822,time()));
     }
 
 }
