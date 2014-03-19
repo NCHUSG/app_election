@@ -10,7 +10,7 @@
 	        <div class="panel-body">
 	        	<div class="row">
 		        	<div class="col-xs-12 col-sm-4 col-md-3 col-lg-3">
-		        		<img src="{{asset($const['uploaded_photo_folder'].$element->id);}}" style="width:100%;" alt="">
+		        		<img src="{{asset($const['uploaded_photo_folder'].$element->id)."?".time();}}" style="width:100%;" alt="">
 		        	</div>
 		        	<div class="col-xs-12 col-sm-8 col-md-9 col-lg-9">
 		        		<table class="table table-striped">

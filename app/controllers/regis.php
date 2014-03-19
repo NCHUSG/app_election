@@ -39,9 +39,11 @@ class regis extends BaseController {
             else
                 $this->view_var['NumberOfCandidate']=1;
 
-            $this->view_var['type']=$type;
             $this->view_var['enable_recaptcha']=$this->app_const['enable_recaptcha'];
             
+            $this->view_var['type']=$type;
+            $this->view_var['enabled_field']=$this->app_const['regis_field'];
+            $this->view_var['target_route']='regis1';
             return View::make('form',$this->view_var);
         } catch (Exception $e) {
             $this->view_var['message']=$e->getMessage();
@@ -61,16 +63,25 @@ class regis extends BaseController {
             $id=0;
             $photo_tmp=array();
             foreach ($canditates as $key => $value) {
-                $this->valid($value,$this->app_const['validationRule']);
-                $photo_tmp[$key]=$this->photo_valid_and_to_tmp($key);
+                $this->valid($value,$this->app_const['regis_field'],$this->view_var['const']['type2name'][$key]);
+
+                if(isset($value['photo_tmp']))
+                    $photo_tmp[$key]=$this->photo_valid_and_to_tmp($value['photo_tmp'],true);
+                else
+                    $photo_tmp[$key]=$this->photo_valid_and_to_tmp($key);
             }
 
             foreach ($canditates as $key => $value) {
                 $value['regis_type']=$key;
                 $value['type_data']=$id;
 
-                $id=$this->candidate_add($value);
+                $field=$this->app_const['regis_field'];
+                $field['regis_type']=true;
+                $field['type_data']=true;
+
+                $id=$this->candidate_add_or_modify($field,$value);
                 $this->photo_to_upload($photo_tmp[$key],$id);
+                $this->view_var['candidate'][]=candidate::find($id);
             }
 
             $this->view_var['info']=$this->app_const['regis_success_info'];
@@ -110,34 +121,44 @@ class regis extends BaseController {
 
                     $this->view_var['candidate']=$candidate_db->first();
                     
-                    $this->view_var['allowModify']=$this->app_const['allowModify'];
-                    $this->view_var['allowModifyPhoto']=$this->app_const['allowModifyPhoto'];
-                    return View::make('modify',$this->view_var);
+                    $this->view_var['NumberOfCandidate']=1;
+                    $this->view_var['enable_recaptcha']=false;
+                    $this->view_var['type']=$this->view_var['candidate']->regis_type;
+                    $this->view_var['enabled_field']=$this->app_const['allowModify'];
+                    $this->view_var['target_route']='modify1';
+                    $this->view_var['form_title']=$this->view_var['candidate']->name;
+
+                    $this->printvar($this->view_var,"view_var");
+
+                    return View::make('form',$this->view_var);
                     break;
                 case 2:
                     $candidate_db=candidate::whereRaw("code = '".Input::get('code')."' and id = ".Input::get('id'));
+
+                    $this->printvar($candidate_db,"candidate_db");
+
                     if($candidate_db->count() == 0)
                         throw new Exception("請勿亂來！");
 
                     $candidate=Input::get('candidate');
-                    $allowModify=$this->app_const['allowModify'];
-                    $validationRule=array();
-                    $modify=array();
-                    foreach ($allowModify as $key => $value) {
-                        if($value){
-                            $validationRule[$key]=$this->app_const['validationRule'][$key];
-                            $modify[$key]=$candidate[$key];
-                        }
+                    foreach ($candidate as $key => $value) {
+                        $theKey=$key;
                     }
-                    $this->valid($modify,$validationRule);
+                    $candidate=$candidate[$theKey];
+                    
+                    $this->valid($candidate,$this->app_const['allowModify']);
                     $candidate_db=$candidate_db->first();
-                    $candidate_db->update($modify);
+                    $id=$this->candidate_add_or_modify($this->app_const['allowModify'],$candidate,$candidate_db);
 
                     try {
-                        $this->photo_to_upload($this->photo_valid_and_to_tmp('photo'),Input::get('id'));
+                        if(isset($candidate['photo_tmp']))
+                            $photo_tmp=$this->photo_valid_and_to_tmp($candidate['photo_tmp'],true);
+                        else
+                            $photo_tmp=$this->photo_valid_and_to_tmp($theKey);
+                        $this->photo_to_upload($photo_tmp,Input::get('id'));
                     } catch (Exception $e) {}
 
-                    $this->view_var['candidate'][]=$candidate_db;
+                    $this->view_var['candidate'][]=candidate::find($id);
                     $this->view_var['info']=$this->app_const['modify_success_info'];
                     return View::make('regisOK',$this->view_var);
                     break;
@@ -151,8 +172,27 @@ class regis extends BaseController {
         }
     }
 
-    private function valid($toBe_valid,$rule)
+    public function photo_preview($type)
     {
+        try {
+            return $this->photo_valid_and_to_tmp($type);
+        } catch (Exception $e) {
+            return $this->view_var['const']['photo_error_message_prefix'].$e->getMessage();
+        }
+    }
+
+    private function valid($toBe_valid,$field,$errMsg_prefix="")
+    {
+        $rule=array();
+        foreach ($field as $key => $value) {
+            if($value && isset($this->app_const['validationRule'][$key])){
+                $rule[$key]=$this->app_const['validationRule'][$key];
+            }
+        }
+
+        $this->printvar($rule,"rule");
+        $this->printvar($field,"field");
+
         $validator = Validator::make($toBe_valid,$rule,$this->app_const['validationMsg']); //幹，太神威了，我之前那些是在寫三小
         
         $this->printvar($validator->fails(),"validator_failed");
@@ -163,36 +203,41 @@ class regis extends BaseController {
             $err_obj->setFormat(':key.:message');
             
             $err_arr=$err_obj->all();
-            $err_msg='';
+            $err_msg=$errMsg_prefix."的資料有問題：<br>";
 
             $this->printvar($err_arr,"err_arr");
 
             foreach ($err_arr as $key => $value) {
                 $tmp=explode('.',$value);
-                $err_msg.= "欄位「".$this->app_const['col2name'][$tmp[0]]."」的資料有誤：".$tmp[1]."<br>";
+                $err_msg.= "欄位「".$this->app_const['col2name'][$tmp[0]]."」的資料有誤：".$tmp[1]."<br>說明：".$this->view_var['const']['fieldDocExample'][$tmp[0]]."<br>";
             }
             $this->printvar($err_msg,"err_msg");
             throw new Exception($err_msg);
         }
     }
 
-    private function candidate_add($candidate){
-        if($candidate['agree']==='yes')
-            $candidate['agree']=1;
-        else
-            throw new Exception("請勾選同意！");
+    private function candidate_add_or_modify($field,$candidate_data,$candidate_db=null){
+        $data=array();
+        foreach ($field as $key => $value) {
+            if($value && isset($candidate_data[$key])){
+                $data[$key]=$candidate_data[$key];
+            }
+        }
 
-        // generate code:
-        $candidate['code']=hash('crc32b', $candidate['name'].$candidate['depart'].$candidate['phone'].$candidate['email'].$this->time_stamp);
+        $this->printvar($candidate_data,"candidate final");
 
-        $this->printvar($candidate,"candidate final");
+        // add to db or update db:
+        if(isset($candidate_db)){
+            $candidate_db->update($data);
+        }
+        else{
+            // generate code:
+            $data['code']=hash('crc32b', $candidate_data['name'].$candidate_data['depart'].$candidate_data['phone'].$candidate_data['email'].$this->time_stamp);
 
-        // add to db :
-        $candidate_db = candidate::create($candidate);
+            $candidate_db = candidate::create($data);
+        }
         $candidate_db->save(); 
 
-        $this->view_var['candidate'][]=$candidate_db;
-        $this->printvar($candidate_db,'candidate_db');
         return $candidate_db->id;
     }
 
@@ -207,29 +252,44 @@ class regis extends BaseController {
         }
     }
 
-    private function photo_valid_and_to_tmp($type)
+    private function photo_valid_and_to_tmp($name_or_file,$is_file=false)
     {
-        //for debug
-        $this->printvar($_FILES[$type],"FILES: ".$type);
+        //get error message array
+        $err_meg=$this->app_const['photo_error_message'];
 
-        // Validate start :
+        //for path param
+        
+        if($is_file){
+            if(preg_match("/^\d{10,}\.\d$/",$name_or_file)!==1)
+                throw new Exception($err_meg['can_not_process_photo']);
 
-        if($_FILES[$type]['size']<16)
-            throw new Exception('圖片呢？');
+            if(!file_exists($this->app_const['PhotoTempLocation'].$name_or_file))
+                throw new Exception($err_meg['can_not_process_photo']);
 
-        if($_FILES[$type]['size']>$this->app_const['PhotoAllowedSize'])
-            throw new Exception('圖片檔案太大了喔');
+            return $name_or_file;
+        }
 
-        if(!in_array($_FILES[$type]['type'],$this->app_const['PhotoAllowedType']))
-            throw new Exception('錯誤的檔案格式');
+        //for name (input's name, $_FILES's key) param
 
-        $img_info=getimagesize($_FILES[$type]['tmp_name']);
+        if(!isset($_FILES[$name_or_file]))
+            throw new Exception($err_meg['no_photo']);
+
+        if($_FILES[$name_or_file]['size']<16)
+            throw new Exception($err_meg['no_photo']);
+
+        if($_FILES[$name_or_file]['size']>$this->app_const['PhotoAllowedSize'])
+            throw new Exception($err_meg['photo_file_size_too_big']);
+
+        if(!in_array($_FILES[$name_or_file]['type'],$this->app_const['PhotoAllowedType']))
+            throw new Exception($err_meg['photo_file_wrong_type']);
+
+        $img_info=getimagesize($_FILES[$name_or_file]['tmp_name']);
 
         if($img_info===false)
-            throw new Exception('檔案無法辨識...');
+            throw new Exception($err_meg['photo_file_wrong_type']);
 
         if(!in_array($img_info['mime'],$this->app_const['PhotoAllowedType']))
-            throw new Exception('錯誤的檔案格式');
+            throw new Exception($err_meg['photo_file_wrong_type']);
 
         // Validate completed.
         
@@ -243,46 +303,42 @@ class regis extends BaseController {
                 $tmp_photos_dir=scandir($this->app_const['PhotoTempLocation']);
             }
             else
-                throw new Exception('檔案處理失敗！');
+                throw new Exception($err_meg['can_not_process_photo']);
         }
 
-        $this->printvar($tmp_photos_dir,"tmp_photos_dir:");
+        //$this->printvar($tmp_photos_dir,"tmp_photos_dir:");
         foreach ($tmp_photos_dir as $key => $value) {
             $tmp_photo=explode('.',$value);
             if(((int)($tmp_photo[0]))){
                 $tmp_photo=(int)($tmp_photo[0]);
                 if(($this->time_stamp-$tmp_photo)>600){
                     unlink($this->app_const['PhotoTempLocation'].$value);
-                    $this->printvar($this->app_const['PhotoTempLocation'].$value,"unlink:");
+                    //$this->printvar($this->app_const['PhotoTempLocation'].$value,"unlink:");
                 }
             }
             
         }
 
         $cnt=0;
-        $new_photo_path=$this->app_const['PhotoTempLocation'].$this->time_stamp.".".$cnt.".".str_replace("image/","",$img_info['mime']);
+        $new_photo_path=$this->time_stamp.".".$cnt;
         while(file_exists($new_photo_path))
         {
+            if($cnt>=10)
+                throw new Exception($err_meg['can_not_process_photo']);
             $cnt++;
-            $new_photo_path=$this->app_const['PhotoTempLocation'].$this->time_stamp.".".$cnt.".".str_replace("image/","",$img_info['mime']);
+            $new_photo_path=$this->time_stamp.".".$cnt;
         }
 
-        if(!move_uploaded_file($_FILES[$type]['tmp_name'],$new_photo_path))
-            throw new Exception('檔案處理失敗！');
+        if(!move_uploaded_file($_FILES[$name_or_file]['tmp_name'],$this->app_const['PhotoTempLocation'].$new_photo_path))
+            throw new Exception($err_meg['can_not_process_photo']);
 
         return $new_photo_path;
-
         // add to filesystem completed.
     }
 
     private function photo_to_upload($photo_tmp,$id)
     {
-        rename($photo_tmp,$this->app_const['PhotoLocation'].$id);
-    }
-
-    private function proces_photo($name)
-    {
-
+        rename($this->app_const['PhotoTempLocation'].$photo_tmp,$this->app_const['PhotoLocation'].$id);
     }
 
     private function printvar($var,$name=null)

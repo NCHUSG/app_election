@@ -30,6 +30,27 @@ return array(
 
     /*
     |--------------------------------------------------------------------------
+    | regis_field
+    |--------------------------------------------------------------------------
+    | 
+    | 註冊時要有的欄位
+    | 
+    */
+
+    'regis_field' => array(
+        'photo'    => true,
+        'name'     => true,
+        'sex'      => true,
+        'depart'   => true,
+        'exp'      => true,
+        'politics' => true,
+        'phone'    => true,
+        'email'    => true,
+        'agree'    => true,
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
     | validationRegex
     |--------------------------------------------------------------------------
     | 
@@ -94,14 +115,7 @@ return array(
     */
 
     'allowModify' => array(
-        // 'name'     => true,
-        // 'sex'      => true,
-        // 'depart'   => true,
-        // 'exp'      => true,
-        // 'politics' => true,
-        // 'phone'    => true,
-        // 'email'    => true,
-
+        'photo'    => true,
         'name'     => false,
         'sex'      => false,
         'depart'   => false,
@@ -109,18 +123,18 @@ return array(
         'politics' => true,
         'phone'    => false,
         'email'    => false,
+        'agree'    => false,
+
+        // 'photo'    => true,
+        // 'name'     => true,
+        // 'sex'      => true,
+        // 'depart'   => true,
+        // 'exp'      => true,
+        // 'politics' => true,
+        // 'phone'    => true,
+        // 'email'    => true,
+        // 'agree'    => true,
     ),
-
-    /*
-    |--------------------------------------------------------------------------
-    | allowModifyPhoto
-    |--------------------------------------------------------------------------
-    | 
-    | 是否允許修改照片
-    | 
-    */
-
-    'allowModifyPhoto' => true,
 
     /*
     |--------------------------------------------------------------------------
@@ -220,5 +234,33 @@ return array(
     */
 
     'Timestamp_allowRegisEnd' => 1395910800,
+
+    /*
+    |--------------------------------------------------------------------------
+    | photo_error_message
+    |--------------------------------------------------------------------------
+    | 
+    | 圖片上傳錯誤的錯誤訊息
+    | 
+    */
+
+    'photo_error_message' => array(
+
+        'no_photo'                     => '圖片呢？',
+        'photo_file_size_too_big'      => '檔案太大了喔',
+        'photo_file_wrong_type'        => "無法辨識，或是錯誤的檔案格式",
+        'can_not_process_photo'        => '檔案處理失敗！請稍候重試',
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | photo_error_message_prefix
+    |--------------------------------------------------------------------------
+    | 
+    | 圖片上傳錯誤的錯誤訊息
+    | 
+    */
+
+    'photo_error_message_prefix' => '錯誤：',
 );
 

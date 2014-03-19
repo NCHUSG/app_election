@@ -5,10 +5,16 @@
     <title>三合一選舉登記</title>
 
     <script type="text/javascript" src="http://res.nchusg.org/nav/nav.js"></script>
-    <script type="text/javascript" src="http://res.nchusg.org/js/jquery-1.10.2.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <link rel="stylesheet" href="{{asset('/css/font-awesome.min.css');}}">
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--[if lt IE 7 ]> <html class="ie6"> <![endif]-->
+    <!--[if IE 7 ]>    <html class="ie7"> <![endif]-->
+    <!--[if IE 8 ]>    <html class="ie8"> <![endif]-->
+    <!--[if IE 9 ]>    <html class="ie9"> <![endif]-->
+    <!--[if (gt IE 9)|!(IE)]><!--> <html class=""> <!--<![endif]-->
 
     <script>
         rs_nav.load({
@@ -21,6 +27,9 @@
             autoHide:true,
             message:true,
         });
+
+        var oldIE = $('html').is('.ie6, .ie7, .ie8');
+        
     </script>
 
     <style>
@@ -55,7 +64,20 @@
 <body>
     <div class="container">
         <h1 class="box_bg text-center text_emphsis" id="main_title"><strong><a href="{{route('index');}}">三合一選舉登記</a></strong></h1>
-        @yield('content')
+        <div class="row main">
+            @yield('content')
+        </div>
+        <div class="row">　</div>
+        <div class="row">
+            <p class="text-center">
+                Designed and Programmed by PastLeo
+                <br>
+                國立中興大學 學生會行政中心 (NCHU Student Goverment Administration Center)
+                <br>
+                © NCHUSG Department of Information Technology 2014. All right reserved.
+            </p>
+            <p class="text-center"><a href="https://github.com/orgs/NCHUSG" target="_blank">Github</a></p>
+        </div>
     </div>
 </body>
 </html>

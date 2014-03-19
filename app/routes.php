@@ -45,3 +45,9 @@ Route::post('/modify',
 		'as' => 'modify1',
 		'uses' => 'regis@modify')
 	);
+
+Route::post('/preview/{type}',
+	array(
+		'as' => 'photo_upload',
+		'uses' => 'regis@photo_preview')
+	);
