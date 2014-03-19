@@ -23,7 +23,7 @@
         }
 
     </style>
-    <form id="regis_form" role="form" action="{{route($target_route)}}" method="post" enctype="multipart/form-data">
+    <form id="regis_form" role="form" action="{{route($target_route)}}" method="post">
     @for ($i = 1; $i <= $NumberOfCandidate; $i++,$type++)
         <input type="hidden" name="id" value="{{$candidate->id or ""}}">
         <input type="hidden" name="code" value="{{$candidate->code or ""}}">
@@ -37,10 +37,20 @@
                 <p>照片： ({{ $const['fieldDocExample']['photo'] }})</p>
                 <div class="row">
                     <div class="photo_upload_input col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                        <div class="input-group">
-                            <label for="photo">上傳：</label>
-                            <input type="file" id="photo" name="{{$type}}">
-                        </div>
+                        <span class="btn btn-primary fileinput-button">
+                            <div class="progress progress-striped active" style="display:none;">
+                              <div class="progress-bar progress-bar-info"  role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+                              </div>
+                            </div>
+                            <div class="photo_preview">
+                                @if (isset($candidate))
+                                <img src="{{asset($const['uploaded_photo_folder'].$candidate->id);}}" style="width:100%;" alt="">
+                                @else
+                                <i class="fa fa-upload fa-5x"></i>
+                                @endif
+                            </div>
+                            <input type="file" class="fileupload" name="{{$type}}" data-url="{{route('photo_upload',$type)}}" multiple>
+                        </span>
                     </div>
                 </div>
                 <div class="row">　</div>
@@ -131,6 +141,8 @@
                 <p>4.本同意書如有未盡事宜，依個人資料保護法或其他相關法規之規定辦理。</p>
                 <p>5.您瞭解此一同意書符合個人資料保護法及相關法規之要求，具有書面同意本會蒐集、處理及使用您的個人資料之效果。</p>
 
+                <p>PS.送出後將會給予一組修改碼，可以用於修改證件、經歷和相片，請謹慎保管 (若要修改其他欄位，請洽學生會行政中心資訊部門)。</p>
+
                 <div class="checkbox">
                     <label>
                         @if (isset($candidate) && $candidate->agree)
@@ -165,27 +177,11 @@
         </div>
         @endif
         <div>
-            <button type="submit" class="btn btn-primary btn-lg btn-block">填完了，送出！ (送出後會給予一組驗證碼提供修改經歷和政見)</button>
+            <button type="submit" class="btn btn-primary btn-lg btn-block">填完了，送出！</button>
         </div>
     </form>
     <script src="{{asset('/js/jquery.ui.widget.js')}}"></script>
     <script src="{{asset('/js/jquery.fileupload.js')}}"></script>
-    <div class="hidden" id="photo_upload_ajax">
-        <span class="btn btn-primary fileinput-button">
-            <div class="progress progress-striped active" style="display:none;">
-              <div class="progress-bar progress-bar-info"  role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
-              </div>
-            </div>
-            <div class="photo_preview">
-                @if (isset($candidate))
-                <img src="{{asset($const['uploaded_photo_folder'].$candidate->id);}}" style="width:100%;" alt="">
-                @else
-                <i class="fa fa-upload fa-5x"></i>
-                @endif
-            </div>
-            <input type="file" class="fileupload" name="{{$type}}" data-url="{{route('photo_upload',$type)}}" multiple>
-        </span>
-    </div>
     
     <script>
         var submit_url="{{route($target_route)}}";
@@ -199,10 +195,6 @@
                 alert("舊版 IE (版本小於等於9) 無法正常上傳檔案，因此若要申請，請使用 Chrome 或 Firefox 等先進瀏覽器");
             }
 
-            $('form').removeAttr('enctype');
-            $('div.photo_upload_input').each(function(){
-                $(this).empty().append($('div#photo_upload_ajax').children());
-            });
             $('input.fileupload').each(function(){
                 var preview_box=$(this).parent().find('div.photo_preview');
                 var progress_bar=$(this).parent().find('div.progress');

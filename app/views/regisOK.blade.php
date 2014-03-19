@@ -44,7 +44,7 @@
 	        	</div>
 	        	<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 	        		<div class="jumbotron box_bg box_bg_">
-	        			<p>驗證碼：</p>
+	        			<p>修改碼：</p>
 	        			<h3 class="text_emphsis">{{ $element->code; }}</h3>
 	        		</div>
 	        	</div>

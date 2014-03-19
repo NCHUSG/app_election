@@ -65,6 +65,7 @@ class regis extends BaseController {
             foreach ($canditates as $key => $value) {
                 $this->valid($value,$this->app_const['regis_field'],$this->view_var['const']['type2name'][$key]);
 
+
                 if(isset($value['photo_tmp']))
                     $photo_tmp[$key]=$this->photo_valid_and_to_tmp($value['photo_tmp'],true);
                 else
@@ -126,7 +127,7 @@ class regis extends BaseController {
                     $this->view_var['type']=$this->view_var['candidate']->regis_type;
                     $this->view_var['enabled_field']=$this->app_const['allowModify'];
                     $this->view_var['target_route']='modify1';
-                    $this->view_var['form_title']=$this->view_var['candidate']->name;
+                    $this->view_var['form_title']="資料修改：".$this->view_var['const']['type2name'][$this->view_var['candidate']->regis_type]." - ".$this->view_var['candidate']->name;
 
                     $this->printvar($this->view_var,"view_var");
 
