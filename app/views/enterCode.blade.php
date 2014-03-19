@@ -1,7 +1,7 @@
 @extends('layout')
 
 @section('content')
-    <div class="alert alert-warning"><strong>請輸入驗證碼以開始修改資料</strong></div>
+    <div class="alert alert-warning"><strong>請輸入修改碼以開始修改資料</strong></div>
     <form action="{{route('modify1')}}" method="post">
         @if($enable_recaptcha)
         <div class="alert alert-danger">
@@ -24,8 +24,8 @@
         </div>
         @endif
         <div class="input-group">
-            <span class="input-group-addon">驗證碼</span>
-            <input type="text" class="form-control" placeholder="驗證碼" name="code"></input>
+            <span class="input-group-addon">修改碼</span>
+            <input type="text" class="form-control" placeholder="修改碼" name="code"></input>
         </div>
         <div class="row">　</div>
         <div>
