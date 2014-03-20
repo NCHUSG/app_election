@@ -9,19 +9,19 @@
                 <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                     <a href="{{ route('regis0',0) }}" type="button" class="btn btn-primary btn-lg btn-block btn-sm">
                         <img src="{{asset('/img/president_sm.png')}}" style="max-height:200px">
-                        <p class="text-center">學生會正副會長</p>
+                        <h3 class="text-center text_emphsis">學生會正副會長</h3>
                     </a>
                 </div>
                 <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
-                    <a href="{{ route('regis0',2) }}" type="button" class="btn btn-success btn-lg btn-block btn-sm">
+                    <a href="{{ route('regis0',2) }}" type="button" class="btn btn-lg btn-block btn-sm" style="color: #fff;background-color: #47A4D8;border-color: #296063;">
                         <img src="{{asset('/img/council_sm.png')}}" style="max-height:200px">
-                        <p class="text-center">學生代表</p>
+                        <h3 class="text-center text_emphsis">學生代表</h3>
                     </a>
                 </div>
                 <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                     <a href="{{ route('regis0',3) }}" type="button" class="btn btn-info btn-lg btn-block btn-sm" >
                         <img src="{{asset('/img/depart_master_sm.png')}}" style="max-height:200px">
-                        <p class="text-center">系總幹事</p>
+                        <h3 class="text-center text_emphsis">系總幹事</h3>
                     </a>
                 </div>
             </div>
