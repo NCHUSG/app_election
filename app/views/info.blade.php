@@ -5,10 +5,33 @@
             <div class="row">
                 <h2 class="text_emphsis text-center"><strong>登記參選</strong></h2>
             </div>
-                <a href="{{ route('regis0',0); }}" type="button" class="btn btn-primary btn-lg btn-block btn-sm">學生會正副會長</a>
-                <a href="{{ route('regis0',2); }}" type="button" class="btn btn-success btn-lg btn-block btn-sm">學生代表</a>
-                <a href="{{ route('regis0',3); }}" type="button" class="btn btn-info btn-lg btn-block btn-sm" >系總幹事</a>
-                <a href="{{ route('modify0'); }}" type="button" class="btn btn-warning btn-lg btn-block btn-sm">修改已登記資料</a>
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                    <a href="{{ route('regis0',0) }}" type="button" class="btn btn-primary btn-lg btn-block btn-sm">
+                        <img src="{{asset('/img/president_sm.png')}}" style="max-height:200px">
+                        <p class="text-center">學生會正副會長</p>
+                    </a>
+                </div>
+                <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                    <a href="{{ route('regis0',2) }}" type="button" class="btn btn-success btn-lg btn-block btn-sm">
+                        <img src="{{asset('/img/council_sm.png')}}" style="max-height:200px">
+                        <p class="text-center">學生代表</p>
+                    </a>
+                </div>
+                <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                    <a href="{{ route('regis0',3) }}" type="button" class="btn btn-info btn-lg btn-block btn-sm" >
+                        <img src="{{asset('/img/depart_master_sm.png')}}" style="max-height:200px">
+                        <p class="text-center">系總幹事</p>
+                    </a>
+                </div>
+            </div>
+            <div class="row">　</div>
+            <div class="row">
+                <a href="{{ route('modify0') }}" type="button" class="btn btn-warning btn-lg btn-block btn-sm">
+                    修改已登記資料
+                </a>
+                
+            </div>
         </div>
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
