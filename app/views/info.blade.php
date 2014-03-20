@@ -1,6 +1,18 @@
 @extends('layout')
 
 @section('content')
+        <style>
+            a.btn-council{
+                color: #fff;
+                background-color: #47A4D8;
+                border-color: #296063;
+            }
+            a.btn-council:hover{
+                color: #fff;
+                background-color: #3986B1;
+                border-color: #1B4042;
+            }
+        </style>
         <div class="alert box_bg box_bg_">
             <div class="row">
                 <h2 class="text_emphsis text-center"><strong>登記參選</strong></h2>
@@ -13,7 +25,7 @@
                     </a>
                 </div>
                 <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
-                    <a href="{{ route('regis0',2) }}" type="button" class="btn btn-lg btn-block btn-sm" style="color: #fff;background-color: #47A4D8;border-color: #296063;">
+                    <a href="{{ route('regis0',2) }}" type="button" class="btn btn-council btn-lg btn-block btn-sm">
                         <img src="{{asset('/img/council_sm.png')}}" style="max-height:200px">
                         <h3 class="text-center text_emphsis">學生代表</h3>
                     </a>
