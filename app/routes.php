@@ -17,12 +17,7 @@ Route::get('/',
 		'uses' => 'intro@main')
 	);
 
-Route::get('/get',array(
-		'as' => 'get_default',
-		'uses' => 'intro@get')
-	);
-
-Route::get('/get/{type}/{start_id}',array(
+Route::get('/get/{type?}/{start_id?}',array(
 		'as' => 'get',
 		'uses' => 'intro@get')
 	);

@@ -21,17 +21,15 @@ class intro extends BaseController {
 
     public function get($type=0,$start_id=0)
     {
-        if(!is_int($start_id) || !is_int($type))
+        if(!is_int((int)$start_id) || !is_int((int)$type))
             App::abort(404);
 
-        // if(!in_array($type, $this->app_const['allowDirectShowCandidateId'],true))
-        //     App::abort(404);
+        if(!in_array((int)$type, $this->app_const['allowDirectShowCandidateId'],true))
+            App::abort(404);
 
         $candidate_arr=array();
         if($type==0){
             $president=candidate::whereRaw('regis_type = 0 and id >= '.$start_id.' limit '.$this->app_const['number_to_show_once'])->get()->toArray();
-
-            
 
             foreach ($president as $key => $value) {
                 $id=$value['id'];
@@ -39,8 +37,13 @@ class intro extends BaseController {
 
                 $candidate_arr[]=$this->filter_col(candidate::whereRaw('regis_type = 1 and type_data = '.$id)->first()->toArray());
             }
+        }
+        else{
+            $candidate_tmp=candidate::whereRaw('regis_type = '.$type.' and id >= '.$start_id.' limit '.$this->app_const['number_to_show_once'])->get()->toArray();
 
-            //var_dump($candidate_arr);
+            foreach ($candidate_tmp as $key => $value) {
+                $candidate_arr[]=$this->filter_col($value);
+            }
         }
 
         return json_encode($candidate_arr);

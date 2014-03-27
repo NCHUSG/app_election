@@ -13,6 +13,7 @@
                 border-color: #1B4042;
             }
         </style>
+        <script src="{{asset('/js/jquery.appear.js')}}"></script>
         <div class="alert box_bg box_bg_">
             <div class="row">
                 <h2 class="text_emphsis text-center"><strong>登記參選</strong></h2>
@@ -120,4 +121,10 @@
             </div>
         </div>
     </div>
+
+    <script>
+        rs_nav.config.complete=function(){
+            console.log("123");
+        };
+    </script>
 @stop
