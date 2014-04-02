@@ -21,8 +21,12 @@ class regis extends BaseController {
 
     public function test()
     {
+        if($this->app_const['ForceAllowRegis'])
+            $ForceAllowRegis='true';
+        else
+            $ForceAllowRegis='false';
         //$this->view_var['candidate']=candidate::where('id', '=', 16)->take(1)->get();
-        return 'timestamp:'.time().'<br>now:'.date(DATE_RFC2822)."<br>start:".date(DATE_RFC2822,$this->app_const['Timestamp_allowRegis'])."<br>end:".date(DATE_RFC2822,$this->app_const['Timestamp_allowRegisEnd']);
+        return 'timestamp:'.time().'<br>now:'.date(DATE_RFC2822)."<br>start:".date(DATE_RFC2822,$this->app_const['Timestamp_allowRegis'])."<br>end:".date(DATE_RFC2822,$this->app_const['Timestamp_allowRegisEnd'])."<br>ForceAllowRegis=\n".$ForceAllowRegis;
 
         //return hash('crc32b','邱冠喻0970900813資訊科學與工程學系三年級');
     }
@@ -356,6 +360,8 @@ class regis extends BaseController {
 
     private function time_check()
     {
+        if($this->app_const['ForceAllowRegis'])
+            return;
         if(time()<=$this->app_const['Timestamp_allowRegis'])
             throw new Exception("報名時間還沒到喔，報名將開始於：".date(DATE_RFC2822,$this->app_const['Timestamp_allowRegis'])."<br>現在時間是：".date(DATE_RFC2822,time()));
 
