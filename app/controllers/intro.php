@@ -11,6 +11,10 @@ class intro extends BaseController {
 
         $this->app_const = Config::get('app_const');
 
+        $this->view_var['show_candidate']=$this->app_const['show_candidate'];
+        $this->view_var['show_regis']=$this->time_check();
+        $this->view_var['number_to_show_once']=$this->app_const['number_to_show_once'];
+
         $this->time_stamp = time();
     }
 
@@ -21,6 +25,9 @@ class intro extends BaseController {
 
     public function get($type=0,$start_id=0)
     {
+        if(!$this->app_const['show_candidate'])
+            App::abort(403);
+
         if(!is_int((int)$start_id) || !is_int((int)$type))
             App::abort(404);
 
@@ -46,6 +53,10 @@ class intro extends BaseController {
             }
         }
 
+        foreach ($candidate_arr as $key => $value) {
+            $candidate_arr[$key]['exp']=nl2br($candidate_arr[$key]['exp']);
+            $candidate_arr[$key]['politics']=nl2br($candidate_arr[$key]['politics']);
+        }
         return json_encode($candidate_arr);
     }
 
@@ -60,6 +71,19 @@ class intro extends BaseController {
         }
 
         return $output;
+    }
+
+    private function time_check()
+    {
+        if($this->app_const['ForceAllowRegis'])
+            return true;
+        if(time()<=$this->app_const['Timestamp_allowRegis'])
+            //throw new Exception("報名時間還沒到喔，報名將開始於：".date(DATE_RFC2822,$this->app_const['Timestamp_allowRegis'])."<br>現在時間是：".date(DATE_RFC2822,time()));
+            return false;
+
+        if(time()>=$this->app_const['Timestamp_allowRegisEnd'])
+            //throw new Exception("報名時間已經結束了喔，報名已經結束於：".date(DATE_RFC2822,$this->app_const['Timestamp_allowRegisEnd'])."<br>現在時間是：".date(DATE_RFC2822,time()));
+            return false;
     }
 
 }

@@ -14,6 +14,7 @@
             }
         </style>
         <script src="{{asset('/js/jquery.appear.js')}}"></script>
+        @if($show_regis)
         <div class="alert box_bg box_bg_">
             <div class="row">
                 <h2 class="text_emphsis text-center"><strong>登記參選</strong></h2>
@@ -46,6 +47,7 @@
                 
             </div>
         </div>
+        @endif
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
             <div class="jumbotron box_bg box_bg_">
@@ -60,6 +62,360 @@
             </div>
         </div>
     </div>
+    @if($show_candidate)
+        <style>
+            div.move-ctrl{
+                display: inline-block;
+                width: 4%;
+
+
+            }
+            div.ctrl-btn{
+                height: 400px;
+                position: relative;
+                z-index: 999;
+                width: 200%;
+
+                
+            }
+            div.ctrl-btn:hover{
+                background-color: rgba(145, 183, 192, 0.47);
+                border-radius: 10px
+            }
+            div.next{
+                background: url('img/next.png') center no-repeat;
+                
+            }
+            div.prev{
+                background: url('img/prev.png') center no-repeat;
+            }
+            .next div.ctrl-btn{
+                right: 100%;
+
+            }
+
+            div.view{
+                display: inline-block;
+                width: 90%;
+
+                background: green;
+                overflow: hidden;
+            }
+            ul.view_content{
+                overflow: visible;
+                position: relative;
+                left: 0;
+                white-space: nowrap;
+                vertical-align: top;
+                -moz-transition: left .3s ease-in-out;
+                -webkit-transition: left .3s ease-in-out;
+                transition: left .3s ease-in-out;
+                display: inline-block;
+
+                list-style: none;
+
+                padding: 0;
+            }
+            li.candidate_data{
+                margin: 20px;
+                height: 360px;
+                width: 250px;
+                vertical-align: top;
+                word-wrap: break-word;
+                display: inline-block;
+                white-space: normal;
+            }
+            li.candidate_data.title{
+                width: 200px;
+            }
+
+            div.loadingProgressContainer{
+                margin: auto;
+                margin-top: 183px;
+                width:150px;
+                height:12px;
+                overflow:hidden;
+                background-color:#4653DB;
+                transition:background-color 0.5s;
+                -moz-border-radius:6px;
+                -webkit-border-radius:6px;
+                -ms-border-radius:6px;
+                -o-border-radius:6px;
+                border-radius:6px;
+            }
+
+            div.loadingProgressContainer.working{
+                background-color:#34C8D5;
+            }
+
+            div.loadingProgressG{
+                background-color:#116327;
+                margin-top:0;
+                margin-left:-150px;
+                -moz-animation-name:bounce_loadingProgressG;
+                -moz-animation-duration:1.5s;
+                -moz-animation-iteration-count:infinite;
+                -moz-animation-timing-function:linear;
+                -webkit-animation-name:bounce_loadingProgressG;
+                -webkit-animation-duration:1.5s;
+                -webkit-animation-iteration-count:infinite;
+                -webkit-animation-timing-function:linear;
+                -ms-animation-name:bounce_loadingProgressG;
+                -ms-animation-duration:1.5s;
+                -ms-animation-iteration-count:infinite;
+                -ms-animation-timing-function:linear;
+                -o-animation-name:bounce_loadingProgressG;
+                -o-animation-duration:1.5s;
+                -o-animation-iteration-count:infinite;
+                -o-animation-timing-function:linear;
+                animation-name:bounce_loadingProgressG;
+                animation-duration:1.5s;
+                animation-iteration-count:infinite;
+                animation-timing-function:linear;
+                width:150px;
+                height:12px;
+            }
+
+            @-moz-keyframes bounce_loadingProgressG{
+            0%{
+            margin-left:-150px;
+            }
+
+            100%{
+            margin-left:150px;
+            }
+
+            }
+
+            @-webkit-keyframes bounce_loadingProgressG{
+            0%{
+            margin-left:-150px;
+            }
+
+            100%{
+            margin-left:150px;
+            }
+
+            }
+
+            @-ms-keyframes bounce_loadingProgressG{
+            0%{
+            margin-left:-150px;
+            }
+
+            100%{
+            margin-left:150px;
+            }
+
+            }
+
+            @-o-keyframes bounce_loadingProgressG{
+            0%{
+            margin-left:-150px;
+            }
+
+            100%{
+            margin-left:150px;
+            }
+
+            }
+
+            @keyframes bounce_loadingProgressG{
+            0%{
+            margin-left:-150px;
+            }
+
+            100%{
+            margin-left:150px;
+            }
+
+            }
+
+        </style>
+
+        <h2 class="text-center">學生會正副長 候選人名單</h2>
+        <div class="row" id="president">
+            <div class="move-ctrl prev">
+                <div class="ctrl-btn"></div>
+            </div>
+            <div class="view">
+                <ul class="view_content">
+                    <li id="0" class="candidate_data">
+                        <div class="loadingProgressContainer"><div class="loadingProgressG"></div></div>
+                    </li>
+                </ul>
+            </div>
+            <div class="move-ctrl next">
+                <div class="ctrl-btn"></div>
+            </div>
+        </div>
+        <h2 class="text-center">學生代表 候選人名單</h2>
+        <div class="row" id="council">
+            <div class="move-ctrl prev">
+                <div class="ctrl-btn"></div>
+            </div>
+            <div class="view">
+                <ul class="view_content">
+                    <li id="0" class="candidate_data">
+                        <div class="loadingProgressContainer"><div class="loadingProgressG"></div></div>
+                    </li>
+                </ul>
+            </div>
+            <div class="move-ctrl next">
+                <div class="ctrl-btn"></div>
+            </div>
+        </div>
+        <h2 class="text-center">系總幹事 候選人名單</h2>
+        <div class="row" id="depart_master">
+            <div class="move-ctrl prev">
+                <div class="ctrl-btn"></div>
+            </div>
+            <div class="view">
+                <ul class="view_content">
+                    <li id="0" class="candidate_data">
+                        <div class="loadingProgressContainer"><div class="loadingProgressG"></div></div>
+                    </li>
+                </ul>
+            </div>
+            <div class="move-ctrl next">
+                <div class="ctrl-btn"></div>
+            </div>
+        </div>
+
+        <script type="text/javascript" src="js/jquery.appear.js"></script>
+        <script>
+            var number_to_show_once={{$number_to_show_once}};
+            var img_src_folder="{{asset('/img/upload/')}}";
+            var candidate_source_url="{{route('get')}}";
+            var regis_type2name=[
+                {en:'president',ch:'學生會長'},
+                {en:'sub-president',ch:'學生會副會長'},
+                {en:'council',ch:'學生代表'},
+                {en:'depart_master',ch:'系總幹事'}];
+            var name2regis_type=new Array();
+            name2regis_type['president']=0;
+            name2regis_type['council']=2;
+            name2regis_type['depart_master']=3;
+
+            var getting=[
+                false,false,false,false
+            ];
+            var debug;
+
+            function put_candidate(pool_location,data){
+                //console.log(data);
+
+                var container;
+                var container_height;
+                var wrapper_height=$(pool_location).height();
+
+                function build_container(){
+                    container=$(pool_location).clone().empty();
+                    container_height=0;
+                    pool_location.before(container);
+                }
+
+                function add_element(element){
+                    container.append(element);
+                    var element_height=element.height();
+
+                    container_height+=element_height;
+                    if(container_height>wrapper_height){
+                        //console.log('overflow...');
+                        var temp_element=element.clone();
+                        element.remove();
+
+                        if((element_height>wrapper_height)&&(temp_element.is('h2')||temp_element.is('h3')||temp_element.is('p'))){
+                            var content_str=temp_element.html();
+                            var pool_str="";
+                            //console.log("cutting string");
+
+                            container.append(temp_element);
+                            temp_element.html(pool_str);
+                            while((temp_element.height()<wrapper_height)&&content_str!=""){
+                                pool_str+=content_str.substr(0,1);
+                                content_str=content_str.substr(1);
+                                temp_element.html(pool_str);
+                            }
+                            if(content_str!=""){
+                                temp_element=temp_element.clone().html(content_str);
+                                build_container();
+                                add_element(temp_element);
+                            }
+                        }
+                        else{
+                            //console.log("simply add into the new container");
+                            build_container();
+                            add_element(temp_element);
+                        }
+                        
+                    }
+                }
+
+                build_container();
+                container.addClass('title').attr('id',data.id);
+                
+                //pool_location.before(temp);
+                add_element($('<img class="img-responsive img-thumbnail" alt="">').attr('src',img_src_folder+"/"+data.id));
+                var name_temp=data.name+"  ";
+                if(data.sex==1)
+                    name_temp+="男"
+                else
+                    name_temp+="女"
+                add_element($('<h2></h2>').html(name_temp));
+                add_element($('<h3></h3>').html(data.depart));
+                build_container();
+                add_element($('<p></p>').html("經歷：<br>"+data.exp));
+                build_container();
+                add_element($('<p></p>').html("政見：<br>"+data.politics));
+                debug=container
+                //console.log(container_height);
+                
+                
+                pool_location.attr('id',data.id+1);
+            }
+
+            function get_candidate(type,start,pool_location){
+                var target_url=candidate_source_url+"/"+type+"/"+start;
+                $.ajax({
+                    dataType: "json",
+                    url: target_url,
+                    success: function(data,textStatus){
+                        getting[type]=false;
+                        //console.log("get_candidate success!,textStatus="+textStatus);
+                        debug=data;
+
+                        data.forEach(function(ele){
+                            //console.log(ele);
+                            put_candidate(pool_location,ele);
+                            
+                        });
+                        if(data.length<number_to_show_once)
+                            pool_location.fadeOut();
+                        
+                    },
+                });
+            }
+
+            rs_nav.config.complete=function(){
+                $('div.loadingProgressContainer').appear();
+
+                $(document.body).on('appear', 'div.loadingProgressContainer', function(e, $affected) {
+                    //console.log($(this));
+
+                    //debug=;
+                    var type=name2regis_type[$(this).parents('div.row').attr('id')];
+                    var start=$(this).parents('ul').find('li:last').attr('id');
+                    console.log("type_id="+type+" start="+start);
+                    if(!getting[type]){
+                        get_candidate(type,start,$(this).parents('li'));
+                        getting[type]=true;
+                    }
+
+                  });
+            };
+        </script>
+    @endif
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8">
             <div class="panel panel-info">
@@ -126,10 +482,4 @@
             </div>
         </div>
     </div>
-
-    <script>
-        rs_nav.config.complete=function(){
-            console.log("123");
-        };
-    </script>
 @stop
