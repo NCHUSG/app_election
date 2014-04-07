@@ -108,9 +108,9 @@
                 left: 0;
                 white-space: nowrap;
                 vertical-align: top;
-                -moz-transition: left .3s ease-in-out;
-                -webkit-transition: left .3s ease-in-out;
-                transition: left .3s ease-in-out;
+                -moz-transition: left {{$const['moving_inteval']}}ms ease-in-out;
+                -webkit-transition: left {{$const['moving_inteval']}}ms ease-in-out;
+                transition: left {{$const['moving_inteval']}}ms ease-in-out;
                 display: inline-block;
 
                 list-style: none;
@@ -297,6 +297,7 @@
         <script type="text/javascript" src="js/queue.js"></script>
         <script>
             var showingDelayTimeout={{$const['showingDelayTimeout']}};
+            var moving_inteval={{$const['moving_inteval']}};
             var number_to_show_once={{$number_to_show_once}};
             var img_src_folder="{{asset('/img/upload/')}}";
             var candidate_source_url="{{route('get')}}";
@@ -332,13 +333,8 @@
             var getting=[
                 false,false,false,false
             ];
-            var putting=[
-                false,false,false,false
-            ];
-            var debug;
-            var debug1;
 
-            $.fn.candidate=function(data,isTitle){
+            $.fn.candidate=function(data,isTitle,completed){
                 var container=$(this).parents('ul');
                 var oriThis=this;
 
@@ -361,7 +357,6 @@
                 }
 
                 var add_element=function(element,nextStep){
-                    debug=current_block;
                     current_block.append(element);
                     var element_height=element.height();
 
@@ -413,6 +408,7 @@
                     if(typeof current_data ==="undefined"){
                         current_block.removeClass('building');
                         oriThis.puting_candidate=false;
+                        completed();
                     }
                     else if(current_data==="new_block")
                         new_container(next_data);
@@ -436,85 +432,103 @@
                 }
             }
 
+            function trigger_get(e, $affected) {
+                
+                var type=name2regis_type[$(this).parents('div.row').attr('id')];
+                var start=$(this).parents('ul').find('li:last').attr('id');
+                var triggered_loadingBar=this;
+                var triggered_li=$(this).parents('li');
+                console.log("trigger_get");
+                if(!getting[type]){
+                    console.log("getting");
+                    var target_url=candidate_source_url+"/"+type+"/"+start;
+                    getting[type]=true;
+                    $.ajax({
+                        dataType: "json",
+                        url: target_url,
+                        success: function(data,textStatus){
+
+                            function completed(){
+                                getting[type]=false;
+                            }
+
+                            function add_normal_ele(ele){
+                                triggered_li.candidate(ele,false,completed);
+                            }
+
+                            data.forEach(function(a_candidate){
+                                if(a_candidate.regis_type<=1){
+                                    if(typeof triggered_loadingBar.presidentCnt === 'undefined')
+                                        triggered_loadingBar.presidentCnt=0;
+                                    var president_str_temp="第"+((triggered_loadingBar.presidentCnt/2+1).toString().split('.')[0])+"組之";
+                                    triggered_loadingBar.presidentCnt++;
+                                    president_str_temp+=regis_type2name[a_candidate.regis_type].ch+"候選人：";
+
+                                    triggered_li.candidate($('<p></p>').html(president_str_temp),true,completed);
+                                    add_normal_ele($('<img class="img-responsive img-thumbnail" alt="">').attr('src',img_src_folder+"/"+a_candidate.id));
+                                }
+                                else{
+                                triggered_li.candidate($('<img class="img-responsive img-thumbnail" alt="">').attr('src',img_src_folder+"/"+a_candidate.id),true,completed);
+                                }
+
+                                var name_temp=a_candidate.name+"  ";
+                                if(a_candidate.sex==1)
+                                    name_temp+="男"
+                                else
+                                    name_temp+="女"
+                                add_normal_ele($('<h2></h2>').html(name_temp),false,completed);
+                                add_normal_ele($('<h3></h3>').html(a_candidate.depart));
+                                add_normal_ele("new_block");
+                                add_normal_ele($('<p></p>').html("經歷：<br>"+a_candidate.exp));
+                                add_normal_ele("new_block");
+                                add_normal_ele($('<p></p>').html("政見：<br>"+a_candidate.politics));
+
+                                if(a_candidate.regis_type!=1)
+                                    triggered_li.attr('id',a_candidate.id+1);
+                            });
+                            
+
+                            //console.log("get_candidate success!,textStatus="+textStatus);
+
+                            if(data.length<number_to_show_once)
+                                $(triggered_loadingBar).fadeOut();
+                        },
+                    });
+                }
+            }
+
+            function move_ul(view_wrapper,delta){
+
+                if(typeof view_wrapper.data('left') ==='undefined')
+                    view_wrapper.data('left',0);
+
+                var left=view_wrapper.data('left');
+                var new_left=left+delta;
+
+                if((new_left>0)||(new_left<(-view_wrapper.width()+candidate_view_right_overflow_restricted))){
+                    view_wrapper.addClass('animated shake');
+                    view_wrapper.one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
+                        view_wrapper.removeClass('animated shake');
+                    });
+                    return left;
+                }
+
+                view_wrapper.css('left',new_left);
+                setTimeout(function(){
+                    $('div.loadingProgressContainer').each(function(){
+                        if($(this).is(":appeared")){
+                            this.trigger_get=trigger_get;
+                            this.trigger_get();
+                        }
+                    });
+                },moving_inteval);
+                return new_left;
+            }
+
             rs_nav.config.complete=function(){
                 $('div.loadingProgressContainer').appear();
 
-                $(document.body).on('appear', 'div.loadingProgressContainer', function(e, $affected) {
-                    var type=name2regis_type[$(this).parents('div.row').attr('id')];
-                    var start=$(this).parents('ul').find('li:last').attr('id');
-                    var triggered_loadingBar=this;
-                    var triggered_li=$(this).parents('li');
-                    //console.log("type_id="+type+" start="+start);
-                    if(!getting[type]){
-                        var target_url=candidate_source_url+"/"+type+"/"+start;
-                        $.ajax({
-                            dataType: "json",
-                            url: target_url,
-                            success: function(data,textStatus){
-                                debug=data;
-                                debug1=triggered_li;
-
-                                data.forEach(function(a_candidate){
-                                    if(a_candidate.regis_type<=1){
-                                        if(typeof triggered_loadingBar.presidentCnt === 'undefined')
-                                            triggered_loadingBar.presidentCnt=0;
-                                        triggered_loadingBar.presidentCnt++;
-                                        var president_str_temp="第"+triggered_loadingBar.presidentCnt+"組之";
-                                        president_str_temp+=regis_type2name[a_candidate.regis_type].ch+"候選人：";
-
-                                        triggered_li.candidate($('<p></p>').html(president_str_temp),true);
-                                        triggered_li.candidate($('<img class="img-responsive img-thumbnail" alt="">').attr('src',img_src_folder+"/"+a_candidate.id),false);
-                                    }
-                                    else{
-                                    triggered_li.candidate($('<img class="img-responsive img-thumbnail" alt="">').attr('src',img_src_folder+"/"+a_candidate.id),true);
-                                    }
-
-                                    var name_temp=a_candidate.name+"  ";
-                                    if(a_candidate.sex==1)
-                                        name_temp+="男"
-                                    else
-                                        name_temp+="女"
-                                    triggered_li.candidate($('<h2></h2>').html(name_temp));
-                                    triggered_li.candidate($('<h3></h3>').html(a_candidate.depart));
-                                    triggered_li.candidate("new_block");
-                                    triggered_li.candidate($('<p></p>').html("經歷：<br>"+a_candidate.exp));
-                                    triggered_li.candidate("new_block");
-                                    triggered_li.candidate($('<p></p>').html("政見：<br>"+a_candidate.politics));
-
-                                    if(a_candidate.regis_type!=1)
-                                        triggered_li.attr('id',a_candidate.id+1);
-                                });
-                                getting[type]=false;
-
-                                //console.log("get_candidate success!,textStatus="+textStatus);
-
-                                if(data.length<number_to_show_once)
-                                    $(triggered_loadingBar).fadeOut();
-                            },
-                        });
-                        getting[type]=true;
-                    }
-                });
-
-                function move_ul(view_wrapper,delta){
-
-                    if(typeof view_wrapper.data('left') ==='undefined')
-                        view_wrapper.data('left',0);
-
-                    var left=view_wrapper.data('left');
-                    var new_left=left+delta;
-
-                    if((new_left>0)||(new_left<(-view_wrapper.width()+candidate_view_right_overflow_restricted))){
-                        view_wrapper.addClass('animated shake');
-                        view_wrapper.one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
-                            view_wrapper.removeClass('animated shake');
-                        });
-                        return left;
-                    }
-
-                    view_wrapper.css('left',new_left);
-                    return new_left;
-                }
+                $(document.body).on('appear', 'div.loadingProgressContainer', trigger_get);
 
                 $('div.ctrl-btn').click(function(){
                     var view_wrapper=$(this).parents('div.row').eq(0).find('ul');
