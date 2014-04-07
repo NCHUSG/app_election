@@ -133,7 +133,7 @@ return array(
 	| 
 	*/
 
-	'showingDelayTimeout' => 300,
+	'showingDelayTimeout' => 100,
 
 	/*
 	|--------------------------------------------------------------------------
@@ -144,6 +144,6 @@ return array(
 	| 
 	*/
 
-	'moving_inteval' => 500,
+	'moving_inteval' => 300,
 );
 

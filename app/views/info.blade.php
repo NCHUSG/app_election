@@ -68,16 +68,12 @@
             div.move-ctrl{
                 display: inline-block;
                 width: 4%;
-
-
             }
             div.ctrl-btn{
                 height: 440px;
                 position: relative;
                 z-index: 999;
                 width: 500%;
-
-                
             }
             div.ctrl-btn:hover{
                 background-color: rgba(145, 183, 192, 0.47);
@@ -92,7 +88,6 @@
             }
             .next div.ctrl-btn{
                 right: 400%;
-
             }
 
             div.view{
@@ -112,9 +107,7 @@
                 -webkit-transition: left {{$const['moving_inteval']}}ms ease-in-out;
                 transition: left {{$const['moving_inteval']}}ms ease-in-out;
                 display: inline-block;
-
                 list-style: none;
-
                 padding: 0;
                 margin-bottom: 0;
             }
@@ -134,7 +127,7 @@
                 transition: opacity 1s;
             }
             li.candidate_data.title{
-                width: 200px;
+                width: 250px;
             }
             li.candidate_data.building{
                 opacity: 0;
@@ -318,7 +311,7 @@
             var change_height_value
             function set_height_value(){
                 move_px=$('div.view').width()/2;
-                candidate_view_right_overflow_restricted=$('div.view').width()/2;
+                candidate_view_right_overflow_restricted=$('div.view').width()/5;
                 change_height_value=false;
             }
 
@@ -361,33 +354,48 @@
                     var element_height=element.outerHeight(true);
 
                     oriThis.current_height+=element_height;
-                    if(oriThis.current_height>max_height){
+                    if(oriThis.current_height>max_height){ //放下去之後會超過 block的長度
                         var temp_element=element.clone();
                         element.remove();
 
-                        if((element_height>max_height)&&(temp_element.is('p'))){
-                            var content_str=temp_element.html();
-                            var pool_str="";
+                        if(element_height>max_height){ //內容比整個 block 都還長啊
+                            if(temp_element.is('p')){ //是文字，可以切
+                                var content_str=temp_element.html();
+                                var pool_str="";
 
-                            current_block.append(temp_element);
-                            temp_element.html(pool_str);
-                            while((temp_element.height()<max_height)&&content_str!=""){
-                                if(content_str.search('<br>')===0){
-                                    pool_str+='<br>';
-                                    content_str=content_str.substr(4);
-                                }
-                                else{
-                                    pool_str+=content_str.substr(0,1);
-                                    content_str=content_str.substr(1);
-                                }
-                                
+                                current_block.append(temp_element);
                                 temp_element.html(pool_str);
+                                while((temp_element.height()<max_height)&&content_str!=""){
+                                    if(content_str.search('<br>')===0){
+                                        pool_str+='<br>';
+                                        content_str=content_str.substr(4);
+                                    }
+                                    else{
+                                        pool_str+=content_str.substr(0,1);
+                                        content_str=content_str.substr(1);
+                                    }
+                                    
+                                    temp_element.html(pool_str);
+                                }
+                                if(content_str!=""){
+                                    if(!pool_str.match(/<br>$/g)){
+                                        var lastChar=pool_str.substr(pool_str.length-1)
+                                        content_str=lastChar+content_str;
+                                        pool_str=pool_str.substr(0,pool_str.length-1);
+
+                                        temp_element.html(pool_str);
+                                    }
+                                    temp_element=temp_element.clone().html(content_str);
+
+                                    new_container(function(){
+                                        add_element(temp_element,nextStep);
+                                    });
+                                }
                             }
-                            if(content_str!=""){
-                                temp_element=temp_element.clone().html(content_str);
-                                new_container(function(){
-                                    add_element(temp_element,nextStep);
-                                });
+                            else{
+                                // 無法，就是太大，直接放
+                                current_block.append(temp_element);
+                                new_container(nextStep);
                             }
                         }
                         else{
@@ -397,7 +405,7 @@
                         }
                         
                     }
-                    else{
+                    else{ // No problem! next one~
                         nextStep();
                     }
                 }
@@ -490,7 +498,9 @@
                             //console.log("get_candidate success!,textStatus="+textStatus);
 
                             if(data.length<number_to_show_once)
-                                $(triggered_loadingBar).fadeOut();
+                                $(triggered_loadingBar).fadeOut(function(){
+                                    $(this).hide().parents('li').empty().html("<h3>以上是全部的候選人了</h3>").fadeIn();
+                                });
                         },
                     });
                 }
