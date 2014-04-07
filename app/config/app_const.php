@@ -244,7 +244,7 @@ return array(
     | 
     */
 
-    'ForceAllowRegis' => true,
+    'ForceAllowRegis' => false,
 
     /*
     |--------------------------------------------------------------------------
