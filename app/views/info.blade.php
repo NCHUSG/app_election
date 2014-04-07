@@ -358,14 +358,14 @@
 
                 var add_element=function(element,nextStep){
                     current_block.append(element);
-                    var element_height=element.height();
+                    var element_height=element.outerHeight(true);
 
                     oriThis.current_height+=element_height;
                     if(oriThis.current_height>max_height){
                         var temp_element=element.clone();
                         element.remove();
 
-                        if((element_height>max_height)&&(temp_element.is('h2')||temp_element.is('h3')||temp_element.is('p'))){
+                        if((element_height>max_height)&&(temp_element.is('p'))){
                             var content_str=temp_element.html();
                             var pool_str="";
 
@@ -438,9 +438,9 @@
                 var start=$(this).parents('ul').find('li:last').attr('id');
                 var triggered_loadingBar=this;
                 var triggered_li=$(this).parents('li');
-                console.log("trigger_get");
+                //console.log("trigger_get");
                 if(!getting[type]){
-                    console.log("getting");
+                    //console.log("getting");
                     var target_url=candidate_source_url+"/"+type+"/"+start;
                     getting[type]=true;
                     $.ajax({
@@ -476,8 +476,7 @@
                                     name_temp+="男"
                                 else
                                     name_temp+="女"
-                                add_normal_ele($('<h2></h2>').html(name_temp),false,completed);
-                                add_normal_ele($('<h3></h3>').html(a_candidate.depart));
+                                add_normal_ele($('<h2></h2>').html(name_temp+"<br>"+a_candidate.depart),false,completed);
                                 add_normal_ele("new_block");
                                 add_normal_ele($('<p></p>').html("經歷：<br>"+a_candidate.exp));
                                 add_normal_ele("new_block");

@@ -25,7 +25,7 @@
             fadeIn:false,
             fadeIn_inteval:1000,
             autoHide:true,
-            message:true,
+            message:false,
         });
 
         var oldIE = $('html').is('.ie6, .ie7, .ie8');
