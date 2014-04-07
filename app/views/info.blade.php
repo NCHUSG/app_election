@@ -63,6 +63,7 @@
         </div>
     </div>
     @if($show_candidate)
+        <link rel="stylesheet" href="{{asset('/css/animate.css')}}">
         <style>
             div.move-ctrl{
                 display: inline-block;
@@ -71,10 +72,10 @@
 
             }
             div.ctrl-btn{
-                height: 400px;
+                height: 440px;
                 position: relative;
                 z-index: 999;
-                width: 200%;
+                width: 500%;
 
                 
             }
@@ -90,7 +91,7 @@
                 background: url('img/prev.png') center no-repeat;
             }
             .next div.ctrl-btn{
-                right: 100%;
+                right: 400%;
 
             }
 
@@ -115,23 +116,33 @@
                 list-style: none;
 
                 padding: 0;
+                margin-bottom: 0;
             }
             li.candidate_data{
                 margin: 20px;
-                height: 360px;
+                height: 400px;
                 width: 250px;
                 vertical-align: top;
                 word-wrap: break-word;
                 display: inline-block;
                 white-space: normal;
+
+                -webkit-transition: opacity 1s;
+                -moz-transition: opacity 1s;
+                -ms-transition: opacity 1s;
+                -o-transition: opacity 1s;
+                transition: opacity 1s;
             }
             li.candidate_data.title{
                 width: 200px;
             }
+            li.candidate_data.building{
+                opacity: 0;
+            }
 
             div.loadingProgressContainer{
                 margin: auto;
-                margin-top: 183px;
+                margin-top: 195px;
                 width:150px;
                 height:12px;
                 overflow:hidden;
@@ -234,11 +245,11 @@
         </style>
 
         <h2 class="text-center">學生會正副長 候選人名單</h2>
-        <div class="row" id="president">
+        <div class="row " id="president">
             <div class="move-ctrl prev">
                 <div class="ctrl-btn"></div>
             </div>
-            <div class="view">
+            <div class="view box_bg_ box_bg">
                 <ul class="view_content">
                     <li id="0" class="candidate_data">
                         <div class="loadingProgressContainer"><div class="loadingProgressG"></div></div>
@@ -254,7 +265,7 @@
             <div class="move-ctrl prev">
                 <div class="ctrl-btn"></div>
             </div>
-            <div class="view">
+            <div class="view box_bg_ box_bg">
                 <ul class="view_content">
                     <li id="0" class="candidate_data">
                         <div class="loadingProgressContainer"><div class="loadingProgressG"></div></div>
@@ -270,7 +281,7 @@
             <div class="move-ctrl prev">
                 <div class="ctrl-btn"></div>
             </div>
-            <div class="view">
+            <div class="view box_bg_ box_bg">
                 <ul class="view_content">
                     <li id="0" class="candidate_data">
                         <div class="loadingProgressContainer"><div class="loadingProgressG"></div></div>
@@ -283,7 +294,9 @@
         </div>
 
         <script type="text/javascript" src="js/jquery.appear.js"></script>
+        <script type="text/javascript" src="js/queue.js"></script>
         <script>
+            var showingDelayTimeout={{$const['showingDelayTimeout']}};
             var number_to_show_once={{$number_to_show_once}};
             var img_src_folder="{{asset('/img/upload/')}}";
             var candidate_source_url="{{route('get')}}";
@@ -297,122 +310,249 @@
             name2regis_type['council']=2;
             name2regis_type['depart_master']=3;
 
+            var preview_px=200;
+            var move_px;
+            var candidate_view_right_overflow_restricted;
+
+            var change_height_value
+            function set_height_value(){
+                move_px=$('div.view').width()/2;
+                candidate_view_right_overflow_restricted=$('div.view').width()/2;
+                change_height_value=false;
+            }
+
+            set_height_value();
+            $(window).resize(function(){
+                if(!change_height_value){
+                    change_height_value=setTimeout(set_height_value,300);
+                    change_height_value=true;
+                }
+            });
+
             var getting=[
                 false,false,false,false
             ];
+            var putting=[
+                false,false,false,false
+            ];
             var debug;
+            var debug1;
 
-            function put_candidate(pool_location,data){
-                //console.log(data);
+            $.fn.candidate=function(data,isTitle){
+                var container=$(this).parents('ul');
+                var oriThis=this;
 
-                var container;
-                var container_height;
-                var wrapper_height=$(pool_location).height();
+                var current_block=$(this);
+                var max_height=current_block.height();
 
-                function build_container(){
-                    container=$(pool_location).clone().empty();
-                    container_height=0;
-                    pool_location.before(container);
+                if(typeof oriThis.current_height==="undefined")
+                    oriThis.current_height=0;
+
+                var new_container=function(whenDelayOver,isTitle){
+                    current_block.removeClass('building');
+                    current_block=$(oriThis).clone().empty().addClass('building').removeAttr('id');
+                    if(isTitle===true)
+                        current_block.addClass('title');
+                    oriThis.current_height=0;
+                    $(oriThis).before(current_block);
+                    setTimeout(function(){
+                        whenDelayOver();
+                    },showingDelayTimeout);
                 }
 
-                function add_element(element){
-                    container.append(element);
+                var add_element=function(element,nextStep){
+                    debug=current_block;
+                    current_block.append(element);
                     var element_height=element.height();
 
-                    container_height+=element_height;
-                    if(container_height>wrapper_height){
-                        //console.log('overflow...');
+                    oriThis.current_height+=element_height;
+                    if(oriThis.current_height>max_height){
                         var temp_element=element.clone();
                         element.remove();
 
-                        if((element_height>wrapper_height)&&(temp_element.is('h2')||temp_element.is('h3')||temp_element.is('p'))){
+                        if((element_height>max_height)&&(temp_element.is('h2')||temp_element.is('h3')||temp_element.is('p'))){
                             var content_str=temp_element.html();
                             var pool_str="";
-                            //console.log("cutting string");
 
-                            container.append(temp_element);
+                            current_block.append(temp_element);
                             temp_element.html(pool_str);
-                            while((temp_element.height()<wrapper_height)&&content_str!=""){
-                                pool_str+=content_str.substr(0,1);
-                                content_str=content_str.substr(1);
+                            while((temp_element.height()<max_height)&&content_str!=""){
+                                if(content_str.search('<br>')===0){
+                                    pool_str+='<br>';
+                                    content_str=content_str.substr(4);
+                                }
+                                else{
+                                    pool_str+=content_str.substr(0,1);
+                                    content_str=content_str.substr(1);
+                                }
+                                
                                 temp_element.html(pool_str);
                             }
                             if(content_str!=""){
                                 temp_element=temp_element.clone().html(content_str);
-                                build_container();
-                                add_element(temp_element);
+                                new_container(function(){
+                                    add_element(temp_element,nextStep);
+                                });
                             }
                         }
                         else{
-                            //console.log("simply add into the new container");
-                            build_container();
-                            add_element(temp_element);
+                            new_container(function(){
+                                add_element(temp_element,nextStep);
+                            });
                         }
                         
                     }
+                    else{
+                        nextStep();
+                    }
                 }
 
-                build_container();
-                container.addClass('title').attr('id',data.id);
-                
-                //pool_location.before(temp);
-                add_element($('<img class="img-responsive img-thumbnail" alt="">').attr('src',img_src_folder+"/"+data.id));
-                var name_temp=data.name+"  ";
-                if(data.sex==1)
-                    name_temp+="男"
-                else
-                    name_temp+="女"
-                add_element($('<h2></h2>').html(name_temp));
-                add_element($('<h3></h3>').html(data.depart));
-                build_container();
-                add_element($('<p></p>').html("經歷：<br>"+data.exp));
-                build_container();
-                add_element($('<p></p>').html("政見：<br>"+data.politics));
-                debug=container
-                //console.log(container_height);
-                
-                
-                pool_location.attr('id',data.id+1);
-            }
+                var next_data=function(){
+                    var current_data=oriThis.cdq.get();
 
-            function get_candidate(type,start,pool_location){
-                var target_url=candidate_source_url+"/"+type+"/"+start;
-                $.ajax({
-                    dataType: "json",
-                    url: target_url,
-                    success: function(data,textStatus){
-                        getting[type]=false;
-                        //console.log("get_candidate success!,textStatus="+textStatus);
-                        debug=data;
+                    if(typeof current_data ==="undefined"){
+                        current_block.removeClass('building');
+                        oriThis.puting_candidate=false;
+                    }
+                    else if(current_data==="new_block")
+                        new_container(next_data);
+                    else if(current_data instanceof jQuery)
+                        add_element(current_data,next_data);
+                    else
+                        throw new Exception("Invalid data type!");
+                };
 
-                        data.forEach(function(ele){
-                            //console.log(ele);
-                            put_candidate(pool_location,ele);
-                            
-                        });
-                        if(data.length<number_to_show_once)
-                            pool_location.fadeOut();
-                        
-                    },
-                });
+                if(typeof oriThis.cdq === 'undefined') //cdq stands for candidate_data_queue
+                    oriThis.cdq=(new Queue());
+
+                if(isTitle&&(typeof oriThis.puting_candidate === 'boolean'))
+                    oriThis.cdq.add("new_block")
+
+                oriThis.cdq.add(data);
+
+                if(!oriThis.puting_candidate){
+                    oriThis.puting_candidate=true;
+                    new_container(next_data,isTitle);
+                }
             }
 
             rs_nav.config.complete=function(){
                 $('div.loadingProgressContainer').appear();
 
                 $(document.body).on('appear', 'div.loadingProgressContainer', function(e, $affected) {
-                    //console.log($(this));
-
-                    //debug=;
                     var type=name2regis_type[$(this).parents('div.row').attr('id')];
                     var start=$(this).parents('ul').find('li:last').attr('id');
-                    console.log("type_id="+type+" start="+start);
+                    var triggered_loadingBar=this;
+                    var triggered_li=$(this).parents('li');
+                    //console.log("type_id="+type+" start="+start);
                     if(!getting[type]){
-                        get_candidate(type,start,$(this).parents('li'));
+                        var target_url=candidate_source_url+"/"+type+"/"+start;
+                        $.ajax({
+                            dataType: "json",
+                            url: target_url,
+                            success: function(data,textStatus){
+                                debug=data;
+                                debug1=triggered_li;
+
+                                data.forEach(function(a_candidate){
+                                    if(a_candidate.regis_type<=1){
+                                        if(typeof triggered_loadingBar.presidentCnt === 'undefined')
+                                            triggered_loadingBar.presidentCnt=0;
+                                        triggered_loadingBar.presidentCnt++;
+                                        var president_str_temp="第"+triggered_loadingBar.presidentCnt+"組之";
+                                        president_str_temp+=regis_type2name[a_candidate.regis_type].ch+"候選人：";
+
+                                        triggered_li.candidate($('<p></p>').html(president_str_temp),true);
+                                        triggered_li.candidate($('<img class="img-responsive img-thumbnail" alt="">').attr('src',img_src_folder+"/"+a_candidate.id),false);
+                                    }
+                                    else{
+                                    triggered_li.candidate($('<img class="img-responsive img-thumbnail" alt="">').attr('src',img_src_folder+"/"+a_candidate.id),true);
+                                    }
+
+                                    var name_temp=a_candidate.name+"  ";
+                                    if(a_candidate.sex==1)
+                                        name_temp+="男"
+                                    else
+                                        name_temp+="女"
+                                    triggered_li.candidate($('<h2></h2>').html(name_temp));
+                                    triggered_li.candidate($('<h3></h3>').html(a_candidate.depart));
+                                    triggered_li.candidate("new_block");
+                                    triggered_li.candidate($('<p></p>').html("經歷：<br>"+a_candidate.exp));
+                                    triggered_li.candidate("new_block");
+                                    triggered_li.candidate($('<p></p>').html("政見：<br>"+a_candidate.politics));
+
+                                    if(a_candidate.regis_type!=1)
+                                        triggered_li.attr('id',a_candidate.id+1);
+                                });
+                                getting[type]=false;
+
+                                //console.log("get_candidate success!,textStatus="+textStatus);
+
+                                if(data.length<number_to_show_once)
+                                    $(triggered_loadingBar).fadeOut();
+                            },
+                        });
                         getting[type]=true;
                     }
+                });
 
-                  });
+                function move_ul(view_wrapper,delta){
+
+                    if(typeof view_wrapper.data('left') ==='undefined')
+                        view_wrapper.data('left',0);
+
+                    var left=view_wrapper.data('left');
+                    var new_left=left+delta;
+
+                    if((new_left>0)||(new_left<(-view_wrapper.width()+candidate_view_right_overflow_restricted))){
+                        view_wrapper.addClass('animated shake');
+                        view_wrapper.one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
+                            view_wrapper.removeClass('animated shake');
+                        });
+                        return left;
+                    }
+
+                    view_wrapper.css('left',new_left);
+                    return new_left;
+                }
+
+                $('div.ctrl-btn').click(function(){
+                    var view_wrapper=$(this).parents('div.row').eq(0).find('ul');
+
+                    if(typeof view_wrapper.data('left') ==='undefined')
+                        view_wrapper.data('left',0);
+
+                    if($(this).parent().is('div.prev')){
+                        var delta=move_px;
+                    }
+                    else{
+                        var delta=-move_px;
+                    }
+                    view_wrapper.data('left',move_ul(view_wrapper,delta));
+                });
+
+                $('div.ctrl-btn').hover(function(){
+                    var view_wrapper=$(this).parents('div.row').eq(0).find('ul');
+
+                    if(typeof view_wrapper.data('left') ==='undefined')
+                        view_wrapper.data('left',0);
+
+                    if(view_wrapper.is('ul.previewed')){
+                        view_wrapper.removeClass('previewed');
+                        view_wrapper.css('left',view_wrapper.data('left'));
+                    }
+                    else{
+                        view_wrapper.addClass('previewed');
+                        if($(this).parent().is('div.prev')){
+                            move_ul(view_wrapper,preview_px);
+                        }
+                        else{
+                            move_ul(view_wrapper,-preview_px);
+                        }
+                    }
+                    
+
+                });
             };
         </script>
     @endif
