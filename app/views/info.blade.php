@@ -311,7 +311,7 @@
             var change_height_value
             function set_height_value(){
                 move_px=$('div.view').width()/2;
-                candidate_view_right_overflow_restricted=$('div.view').width()/5;
+                candidate_view_right_overflow_restricted=$('li.candidate_data').width()*1.25;
                 change_height_value=false;
             }
 
@@ -515,11 +515,15 @@
                 var new_left=left+delta;
 
                 if((new_left>0)||(new_left<(-view_wrapper.width()+candidate_view_right_overflow_restricted))){
+                    if(new_left>0)
+                        new_left=0;
+                    else
+                        new_left=(-view_wrapper.width()+candidate_view_right_overflow_restricted);
                     view_wrapper.addClass('animated shake');
                     view_wrapper.one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
                         view_wrapper.removeClass('animated shake');
                     });
-                    return left;
+                    //return left;
                 }
 
                 view_wrapper.css('left',new_left);
