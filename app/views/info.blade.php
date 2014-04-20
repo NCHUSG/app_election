@@ -97,6 +97,9 @@
                 background: green;
                 overflow: hidden;
             }
+            div.expended div.view{
+                width: 100%;
+            }
             ul.view_content{
                 overflow: visible;
                 position: relative;
@@ -114,7 +117,7 @@
             li.candidate_data{
                 margin: 20px;
                 height: 400px;
-                width: 250px;
+                width: 200px;
                 vertical-align: top;
                 word-wrap: break-word;
                 display: inline-block;
@@ -125,12 +128,22 @@
                 -ms-transition: opacity 1s;
                 -o-transition: opacity 1s;
                 transition: opacity 1s;
+
+                border-top: 5px solid rgb(201, 176, 166);
             }
+
             li.candidate_data.title{
-                width: 250px;
+                width:160px;
             }
+            
             li.candidate_data.building{
                 opacity: 0;
+            }
+            li.candidate_data:nth-last-child(1){
+                border-top: initial;
+            }
+            ul.NO_MORE li.candidate_data:nth-last-child(1){
+                display: none;
             }
 
             div.loadingProgressContainer{
@@ -235,10 +248,49 @@
 
             }
 
+            div.listAll{
+                width: 91%;
+                margin-left: 4%;
+                /* margin-right: auto; */
+                text-align: center;
+                background-color: rgba(0, 255, 204, 0.7);
+                position: relative;
+                top: -10px;
+                font-size: 24px;
+
+                -webkit-transition: background-color 0.5s;
+                -moz-transition: background-color 0.5s;
+                -ms-transition: background-color 0.5s;
+                -o-transition: background-color 0.5s;
+                transition: background-color 0.5s;
+
+                cursor: pointer;
+            }
+
+            div.listAll:hover{
+                background-color: rgba(0, 133, 255, 0.9);
+            }
+
+            br.expend_ctl{
+                display: none;
+            }
+
+            div.expended br.expend_ctl{
+                display: initial;
+            }
+
+            div.expended div.move-ctrl{
+                display: none;
+            }
+
+            div.expended ul.view_content{
+                white-space: initial;
+            }
+
         </style>
 
         <h2 class="text-center">學生會正副長 候選人名單</h2>
-        <div class="row " id="president">
+        <div class="row" id="president">
             <div class="move-ctrl prev">
                 <div class="ctrl-btn"></div>
             </div>
@@ -251,6 +303,9 @@
             </div>
             <div class="move-ctrl next">
                 <div class="ctrl-btn"></div>
+            </div>
+            <div class="listAll">
+                展開
             </div>
         </div>
         <h2 class="text-center">學生代表 候選人名單</h2>
@@ -268,6 +323,9 @@
             <div class="move-ctrl next">
                 <div class="ctrl-btn"></div>
             </div>
+            <div class="listAll">
+                展開
+            </div>
         </div>
         <h2 class="text-center">系總幹事 候選人名單</h2>
         <div class="row" id="depart_master">
@@ -283,6 +341,9 @@
             </div>
             <div class="move-ctrl next">
                 <div class="ctrl-btn"></div>
+            </div>
+            <div class="listAll">
+                展開
             </div>
         </div>
 
@@ -327,7 +388,7 @@
                 false,false,false,false
             ];
 
-            $.fn.candidate=function(data,isTitle,completed){
+            $.fn.candidate=function(data,isNewCandidate,completed){
                 var container=$(this).parents('ul');
                 var oriThis=this;
 
@@ -337,11 +398,13 @@
                 if(typeof oriThis.current_height==="undefined")
                     oriThis.current_height=0;
 
-                var new_container=function(whenDelayOver,isTitle){
+                var new_container=function(whenDelayOver,isNewCandidate){
                     current_block.removeClass('building');
                     current_block=$(oriThis).clone().empty().addClass('building').removeAttr('id');
-                    if(isTitle===true)
+                    if(isNewCandidate===true){
                         current_block.addClass('title');
+                        $(oriThis).before($('<br class="expend_ctl">'));
+                    }
                     oriThis.current_height=0;
                     $(oriThis).before(current_block);
                     setTimeout(function(){
@@ -419,7 +482,9 @@
                         completed();
                     }
                     else if(current_data==="new_block")
-                        new_container(next_data);
+                        new_container(next_data,false);
+                    else if(current_data==="new_candidate")
+                        new_container(next_data,true);
                     else if(current_data instanceof jQuery)
                         add_element(current_data,next_data);
                     else
@@ -429,14 +494,14 @@
                 if(typeof oriThis.cdq === 'undefined') //cdq stands for candidate_data_queue
                     oriThis.cdq=(new Queue());
 
-                if(isTitle&&(typeof oriThis.puting_candidate === 'boolean'))
-                    oriThis.cdq.add("new_block")
+                if(isNewCandidate&&(typeof oriThis.puting_candidate === 'boolean'))
+                    oriThis.cdq.add("new_candidate")
 
                 oriThis.cdq.add(data);
 
                 if(!oriThis.puting_candidate){
                     oriThis.puting_candidate=true;
-                    new_container(next_data,isTitle);
+                    new_container(next_data,isNewCandidate);
                 }
             }
 
@@ -490,6 +555,8 @@
                                 add_normal_ele("new_block");
                                 add_normal_ele($('<p></p>').html("政見：<br>"+a_candidate.politics));
 
+
+
                                 if(a_candidate.regis_type!=1)
                                     triggered_li.attr('id',a_candidate.id+1);
                             });
@@ -499,7 +566,8 @@
 
                             if(data.length<number_to_show_once)
                                 $(triggered_loadingBar).fadeOut(function(){
-                                    $(this).hide().parents('li').empty().html("<h3>以上是全部的候選人了</h3>").fadeIn();
+                                    triggered_li.candidate($("<h3>以上是全部的候選人了</h3>"),true,completed);
+                                    $(this).hide().parents('ul').addClass("NO_MORE");
                                 });
                         },
                     });
@@ -577,8 +645,21 @@
                             move_ul(view_wrapper,-preview_px);
                         }
                     }
-                    
+                });
 
+                $('div.listAll').click(function(){
+                    if($(this).parent().is('div.expended')){
+                        $(this).parent().removeClass('expended');
+                        $(this).html("展開");
+                    }
+                    else{
+                        $(this).parent().addClass('expended');
+                        $(this).html("收回");
+
+                        var view_wrapper=$(this).parent().find('ul.view_content');
+                        view_wrapper.data('left',0);
+                        view_wrapper.css('left','0px');
+                    }
                 });
             };
         </script>

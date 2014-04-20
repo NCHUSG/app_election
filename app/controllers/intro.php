@@ -36,7 +36,10 @@ class intro extends BaseController {
 
         $candidate_arr=array();
         if($type==0){
-            $president=candidate::whereRaw('regis_type = 0 and id >= '.$start_id.' limit '.$this->app_const['number_to_show_once'])->get()->toArray();
+            if($start_id>=1)
+                $president=candidate::whereRaw('regis_type = 0 and id >= '.$start_id.' limit '.$this->app_const['number_to_show_once'])->get()->toArray();
+            else
+                $president=candidate::whereRaw('regis_type = 0 and id >= '.$start_id.' limit '.$this->app_const['number_to_show_once'])->get()->toArray();
 
             foreach ($president as $key => $value) {
                 $id=$value['id'];
