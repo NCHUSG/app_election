@@ -87,6 +87,7 @@ class intro extends BaseController {
         if(time()>=$this->app_const['Timestamp_allowRegisEnd'])
             //throw new Exception("報名時間已經結束了喔，報名已經結束於：".date(DATE_RFC2822,$this->app_const['Timestamp_allowRegisEnd'])."<br>現在時間是：".date(DATE_RFC2822,time()));
             return false;
+        return true;
     }
 
 }
