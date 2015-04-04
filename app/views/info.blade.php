@@ -289,7 +289,7 @@
 
         </style>
 
-        <h2 class="text-center">學生會正副長 候選人名單</h2>
+        <h2 class="text-center">學生會正副會長 候選人名單</h2>
         <div class="row" id="president">
             <div class="move-ctrl prev">
                 <div class="ctrl-btn"></div>

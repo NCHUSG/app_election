@@ -55,4 +55,7 @@ Route::post('/preview/{type}',
 	array(
 		'as' => 'photo_upload',
 		'uses' => 'regis@photo_preview')
-	);
+    );
+
+Route::get('/time',function(){ return time(); });
+
