@@ -708,11 +708,7 @@
                         <h3 class="panel-title">選舉日程</h3>
                     </div>
                     <div class="panel-body">
-                       <p>抽籤時間: 103/3/28 (五)</p>
-                       <p>候選人名單公佈: 103/4/7 (一)</p>
-                       <p>投票日: 103/5/8 (四)</p>
-                       <p>當選公告: 103/5/16 (五)</p>
-                       <p>交接: 103/5/19 (一)</p>
+                        {{ Config::get("app_const.time_table_info") }}
                     </div>
                 </div>
             </div>
@@ -722,9 +718,7 @@
                         <h3 class="panel-title">聯絡選委會</h3>
                     </div>
                     <div class="panel-body">
-                       <p>主委：生科三 吳冠蓉 0987505433</p>
-                       <p>副主委：植病三 黃金立 0920024488</p>
-                       <p>執秘：資管三 蘇立舜 0921142406</p>
+                        {{ Config::get('app_const.contact_info') }}
                     </div>
                 </div>
             </div>
