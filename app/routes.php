@@ -57,26 +57,33 @@ Route::post('/preview/{type}',
 		'uses' => 'regis@photo_preview')
     );
 
-Route::get('/login',
+Route::get('/msg',
 	array(
-		'as' => 'login',
-		'uses' => 'admin@login')
-    );
+		'as' => 'msg',
+		'uses' => 'intro@msg')
+	);
+
 Route::get('/logout',
 	array(
 		'as' => 'logout',
 		'uses' => 'admin@logout')
     );
-Route::get('/msg',
-	array(
-		'as' => 'msg',
-		'uses' => 'intro@msg')
-    );
-Route::get('/oauth',
-	array(
-		'as' => 'oauth',
-		'uses' => 'admin@oauth')
-    );
+
+Route::group(array('before' => 'allow_login'), function()
+{
+	Route::get('/login',
+		array(
+			'as' => 'login',
+			'uses' => 'admin@login')
+	    );
+
+
+	Route::get('/oauth',
+		array(
+			'as' => 'oauth',
+			'uses' => 'admin@oauth')
+	    );
+});
 
 Route::group(array('before' => 'auth'), function()
 {

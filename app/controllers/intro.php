@@ -105,8 +105,8 @@ class intro extends BaseController {
 
     public function msg()
     {
-        $msg = Session::get('msg');
-        $status = Session::has('msg_status') ? Session::get('msg_status') : "primary";
+        $msg = Session::has('msg') ? Session::get('msg') : "No Message";
+        $status = Session::has('msg_status') ? Session::get('msg_status') : "info";
         Session::forget('msg');
         Session::forget('msg_status');
         // return "Login Failed, Reason: " . Session::get('msg');

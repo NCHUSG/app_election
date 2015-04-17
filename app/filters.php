@@ -44,9 +44,14 @@ Route::filter('auth', function()
 });
 
 
-Route::filter('auth.basic', function()
+Route::filter('allow_login', function()
 {
-	return Auth::basic();
+	if(!Config::get('app_const.enable_login')){
+		Session::forget('login');
+		Session::set('msg',"登入功能不開放");
+		Session::set('msg_status',"danger");
+		return Redirect::route('msg');
+	}
 });
 
 /*
