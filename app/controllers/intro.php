@@ -10,8 +10,15 @@ class intro extends BaseController {
         $this->view_var['const'] = Config::get('view_const');
 
         $this->app_const = Config::get('app_const');
+        $this->view_var['login'] = false;
 
-        $this->view_var['show_candidate']=$this->app_const['show_candidate'];
+        if(Session::has('login')){
+            $this->app_const['show_candidate'] = true;
+            $this->app_const['allowShow'] = $this->app_const['allowShow_admin'];
+            $this->view_var['login'] = true;
+        }
+
+        $this->view_var['show_candidate']=$this->app_const['show_candidate'] || Session::has('login');
         $this->view_var['show_regis']=$this->time_check();
         $this->view_var['number_to_show_once']=$this->app_const['number_to_show_once'];
 
@@ -25,7 +32,7 @@ class intro extends BaseController {
 
     public function get($type=0,$start_id=0)
     {
-        if(!$this->app_const['show_candidate'])
+        if(!$this->view_var['show_candidate'])
             App::abort(403);
 
         if(!is_int((int)$start_id) || !is_int((int)$type))
@@ -60,6 +67,12 @@ class intro extends BaseController {
             $candidate_arr[$key]['exp']=nl2br($candidate_arr[$key]['exp']);
             $candidate_arr[$key]['politics']=nl2br($candidate_arr[$key]['politics']);
         }
+
+        if($this->view_var['login']){
+            foreach ($candidate_arr as $key => $value) {
+                $candidate_arr[$key]['addition']="<a onclick='return confirm(\"確定?\");' href='" . route('delete',$candidate_arr[$key]['id']) . "'>刪除此選舉人</a>";
+            }
+        }
         return json_encode($candidate_arr);
     }
 
@@ -88,6 +101,16 @@ class intro extends BaseController {
             //throw new Exception("報名時間已經結束了喔，報名已經結束於：".date(DATE_RFC2822,$this->app_const['Timestamp_allowRegisEnd'])."<br>現在時間是：".date(DATE_RFC2822,time()));
             return false;
         return true;
+    }
+
+    public function msg()
+    {
+        $msg = Session::get('msg');
+        $status = Session::has('msg_status') ? Session::get('msg_status') : "primary";
+        Session::forget('msg');
+        Session::forget('msg_status');
+        // return "Login Failed, Reason: " . Session::get('msg');
+        return View::make('msg',["msg" => $msg, "status" => $status]);
     }
 
 }

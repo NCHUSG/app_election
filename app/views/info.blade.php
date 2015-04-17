@@ -44,7 +44,7 @@
                 <a href="{{ route('modify0') }}" type="button" class="btn btn-warning btn-lg btn-block btn-sm">
                     修改已登記資料
                 </a>
-                
+
             </div>
         </div>
         @endif
@@ -81,7 +81,7 @@
             }
             div.next{
                 background: url('img/next.png') center no-repeat;
-                
+
             }
             div.prev{
                 background: url('img/prev.png') center no-repeat;
@@ -135,7 +135,7 @@
             li.candidate_data.title{
                 width:160px;
             }
-            
+
             li.candidate_data.building{
                 opacity: 0;
             }
@@ -437,7 +437,7 @@
                                         pool_str+=content_str.substr(0,1);
                                         content_str=content_str.substr(1);
                                     }
-                                    
+
                                     temp_element.html(pool_str);
                                 }
                                 if(content_str!=""){
@@ -466,7 +466,7 @@
                                 add_element(temp_element,nextStep);
                             });
                         }
-                        
+
                     }
                     else{ // No problem! next one~
                         nextStep();
@@ -506,7 +506,7 @@
             }
 
             function trigger_get(e, $affected) {
-                
+
                 var type=name2regis_type[$(this).parents('div.row').attr('id')];
                 var start=$(this).parents('ul').find('li:last').attr('id');
                 var triggered_loadingBar=this;
@@ -555,12 +555,15 @@
                                 add_normal_ele("new_block");
                                 add_normal_ele($('<p></p>').html("政見：<br>"+a_candidate.politics));
 
-
+                                if(a_candidate.phone) add_normal_ele($('<p></p>').html("手機：<br>"+a_candidate.phone));
+                                if(a_candidate.email) add_normal_ele($('<p></p>').html("信箱：<br>"+a_candidate.email));
+                                if(a_candidate.code) add_normal_ele($('<p></p>').html("修改碼：<br>"+a_candidate.code));
+                                if(a_candidate.addition) add_normal_ele($('<p></p>').html(a_candidate.addition));
 
                                 if(a_candidate.regis_type!=1)
                                     triggered_li.attr('id',a_candidate.id+1);
                             });
-                            
+
 
                             //console.log("get_candidate success!,textStatus="+textStatus);
 
@@ -587,10 +590,10 @@
                         new_left=0;
                     else
                         new_left=(-view_wrapper.width()+candidate_view_right_overflow_restricted);
-                    view_wrapper.addClass('animated shake');
-                    view_wrapper.one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
-                        view_wrapper.removeClass('animated shake');
-                    });
+                    // view_wrapper.addClass('animated shake');
+                    // view_wrapper.one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
+                    //     view_wrapper.removeClass('animated shake');
+                    // });
                     //return left;
                 }
 
@@ -697,7 +700,7 @@
                     <p><a href="http://ppt.cc/5b5B">學代人數</a></p>
                     <p>【各系系總幹事候選人參選資格】</p><p>依國立中興大學學生社團輔導辦法：</p><ul style="list-style: none;"><li>第九條</li>
                     <li>學生社團負責人對內主持社務，對外代表社團。學生社團負責人登記候選資格為前一學期學業成績及格，操行在八十分以上。且無大過以上之處分者，始可參選，但每人以擔任一個社團之負責人為限。</li></ul>
-                    
+
                 </div>
             </div>
         </div>
@@ -721,6 +724,13 @@
                         {{ Config::get('app_const.contact_info') }}
                     </div>
                 </div>
+            </div>
+            <div class="row">
+                @if($login)
+                    <a href="{{route('logout')}}" class="btn btn-warning btn-lg btn-block">登出</a>
+                @else
+                    <a href="{{route('login')}}" class="btn btn-warning btn-lg btn-block">選舉委員會人員登入</a>
+                @endif
             </div>
         </div>
     </div>

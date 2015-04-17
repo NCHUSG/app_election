@@ -27,8 +27,6 @@ class regis extends BaseController {
             $ForceAllowRegis='false';
         //$this->view_var['candidate']=candidate::where('id', '=', 16)->take(1)->get();
         return 'timestamp:'.time().'<br>now:'.date(DATE_RFC2822)."<br>start:".date(DATE_RFC2822,$this->app_const['Timestamp_allowRegis'])."<br>end:".date(DATE_RFC2822,$this->app_const['Timestamp_allowRegisEnd'])."<br>ForceAllowRegis=\n".$ForceAllowRegis;
-
-        //return hash('crc32b','邱冠喻0970900813資訊科學與工程學系三年級');
     }
 
     public function form($type)
@@ -44,7 +42,7 @@ class regis extends BaseController {
                 $this->view_var['NumberOfCandidate']=1;
 
             $this->view_var['enable_recaptcha']=$this->app_const['enable_recaptcha'];
-            
+
             $this->view_var['type']=$type;
             $this->view_var['enabled_field']=$this->app_const['regis_field'];
             $this->view_var['target_route']='regis1';
@@ -100,7 +98,7 @@ class regis extends BaseController {
     public function modify()
     {
         try {
-            
+
             $this->time_check();
 
             if(!Input::has('code'))
@@ -110,7 +108,7 @@ class regis extends BaseController {
                     $step=2; // step 2 : process the modify request
                 else
                     $step=1; // step 1 : show modifiable data
-            
+
             switch ($step) {
                 case 0:
                     $this->view_var['enable_recaptcha']=$this->app_const['enable_recaptcha'];
@@ -125,7 +123,7 @@ class regis extends BaseController {
                         throw new Exception("錯誤的驗證碼！");
 
                     $this->view_var['candidate']=$candidate_db->first();
-                    
+
                     $this->view_var['NumberOfCandidate']=1;
                     $this->view_var['enable_recaptcha']=false;
                     $this->view_var['type']=$this->view_var['candidate']->regis_type;
@@ -150,7 +148,7 @@ class regis extends BaseController {
                         $theKey=$key;
                     }
                     $candidate=$candidate[$theKey];
-                    
+
                     $this->valid($candidate,$this->app_const['allowModify']);
                     $candidate_db=$candidate_db->first();
                     $id=$this->candidate_add_or_modify($this->app_const['allowModify'],$candidate,$candidate_db);
@@ -199,14 +197,14 @@ class regis extends BaseController {
         $this->printvar($field,"field");
 
         $validator = Validator::make($toBe_valid,$rule,$this->app_const['validationMsg']); //幹，太神威了，我之前那些是在寫三小
-        
+
         $this->printvar($validator->fails(),"validator_failed");
         $this->printvar($validator->messages(),"validator_messages");
 
         if($validator->fails()){
             $err_obj=$validator->messages();
             $err_obj->setFormat(':key.:message');
-            
+
             $err_arr=$err_obj->all();
             $err_msg=$errMsg_prefix."的資料有問題：<br>";
 
@@ -241,7 +239,7 @@ class regis extends BaseController {
 
             $candidate_db = candidate::create($data);
         }
-        $candidate_db->save(); 
+        $candidate_db->save();
 
         return $candidate_db->id;
     }
@@ -263,7 +261,7 @@ class regis extends BaseController {
         $err_meg=$this->app_const['photo_error_message'];
 
         //for path param
-        
+
         if($is_file){
             if(preg_match("/^\d{10,}\.\d$/",$name_or_file)!==1)
                 throw new Exception($err_meg['can_not_process_photo']);
@@ -297,7 +295,7 @@ class regis extends BaseController {
             throw new Exception($err_meg['photo_file_wrong_type']);
 
         // Validate completed.
-        
+
         // add to filesystem :
 
         try {
@@ -321,7 +319,7 @@ class regis extends BaseController {
                     //$this->printvar($this->app_const['PhotoTempLocation'].$value,"unlink:");
                 }
             }
-            
+
         }
 
         $cnt=0;

@@ -35,7 +35,12 @@ App::after(function($request, $response)
 
 Route::filter('auth', function()
 {
-	if (Auth::guest()) return Redirect::guest('login');
+	// if (Auth::guest()) return Redirect::guest('login');
+	if(!Session::has('login')){
+		Session::set('msg',"您沒有權限!");
+		Session::set('msg_status',"danger");
+		return Redirect::route('msg');
+	}
 });
 
 

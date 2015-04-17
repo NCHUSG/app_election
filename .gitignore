@@ -6,6 +6,7 @@ composer.lock
 .env.php
 .DS_Store
 Thumbs.db
+*.sqlite
 
 /app/config/database.php
 /app/config/app_const.php
