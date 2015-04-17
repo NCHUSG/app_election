@@ -37,7 +37,7 @@ class IltOAuthClient {
     }
 
     private function getPage($url) {
-        if(strpos($url,"https") == 0){
+        if(strpos($url,"https") == 0){ // for those machine dont have correct SSL CA
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
             curl_setopt($ch, CURLOPT_HEADER, false);
@@ -60,8 +60,9 @@ class IltOAuthClient {
                         '?token=' . $token .
                         '&client_key=' . $this->client_key .
                         '&client_secret=' . $this->client_secret;
-
-        $data_json  = $this->getPage($res_url);
+        
+        // $data_json  = $this->getPage($res_url);
+        $data_json  = file_get_contents($res_url);
         $data_arr   = json_decode($data_json);
 
         if (empty($data_arr))

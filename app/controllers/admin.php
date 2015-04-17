@@ -22,7 +22,8 @@ class admin extends BaseController {
         $key    = Config::get('app_const.ilt_key');
         $secret = Config::get('app_const.ilt_secret');
         $host   = Config::get('app_const.ilt_host');
-        $scope  = "user.login.basic+user.isIn." . Config::get('app_const.ilt_authorized_group');
+        $group  = Config::get('app_const.ilt_authorized_group');
+        $scope  = "user.login.basic+user.isIn.$group";
 
         # Here is the most important part about using this library.
         $client       = new IltOAuthClient($key, $secret, $host, $scope);
@@ -34,7 +35,7 @@ class admin extends BaseController {
                     throw new Exception("ilt's response is invalid. 會員系統的回應錯誤");
                 if($user_files->status !== 1)
                     throw new Exception("ilt's status of response is invalid. 會員系統的回應錯誤");
-                if($user_files->data->isIn->dev !== true)
+                if($user_files->data->isIn->$group !== true)
                     throw new Exception("You are not in the valid ilt group! 您在 ILT 會員系統沒有取得正確權限");
                 Session::set('login',$user_files);
                 Session::set('msg',"登入成功!");
