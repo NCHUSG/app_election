@@ -725,6 +725,7 @@
                     </div>
                 </div>
             </div>
+            @if(Config::get('app_const.enable_login'))
             <div class="row">
                 @if($login)
                     <a href="{{route('logout')}}" class="btn btn-warning btn-lg btn-block">登出</a>
@@ -732,6 +733,7 @@
                     <a href="{{route('login')}}" class="btn btn-warning btn-lg btn-block">選舉委員會人員登入</a>
                 @endif
             </div>
+            @endif
         </div>
     </div>
 @stop

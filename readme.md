@@ -21,6 +21,7 @@
 5. copy config files
 
         cp app/config/app.example.php app/config/app.php
+        cp app/config/app_const.example.php app/config/app_const.php
         cp app/config/database.example.php app/config/database.php
         cp app/config/packages/sb89/recaptcha/config.example.php app/config/packages/sb89/recaptcha/config.php
         cp /example.htaccess /.htaccess
@@ -28,7 +29,7 @@
 6. add values to some required field in config files
 
         vim app/config/app.php
-        //required field: url, key, timezone
+        //required field: debug, url, key, timezone
 
         vim app/config/database.php
         //required field: connections
@@ -38,6 +39,16 @@
 
         vim .htaccess
         //replace "to/the/app" to the url path for this app
+
+        vim app/config/app_const.php
+        // replace Timestamp_allowRegis, Timestamp_allowRegisEnd to the start/end registration time by http://www.epochconverter.com/
+        // set ForceAllowRegis to true to ignore Timestamp_allowRegis, Timestamp_allowRegisEnd
+        // set time_table_info with html tags, this is the "選舉日程" content
+        // set contact_info with html tags, this is the "聯絡選委會" content
+        //
+        // To enable admin login, you need to create a group under ilt (https://ilt.nchusg.org) and get the developer OAuth2 identity
+        // Give ilt "[Your website base url]/oauth" for "Redirect URIs"
+        // fill up ilt_key, ilt_secret, ilt_authorized_group and set enable_login to true to enable
 
 7. setup composer
 

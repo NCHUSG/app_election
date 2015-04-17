@@ -3,6 +3,12 @@ class admin extends BaseController {
 
     public function login()
     {
+        if(!Config::get('app_const.enable_login')){
+            Session::forget('login');
+            Session::set('msg',"登入功能不開放");
+            Session::set('msg_status',"danger");
+            return Redirect::route('msg');
+        }
         if (!Session::has('login'))
             return Redirect::route('oauth');
         else
