@@ -54,7 +54,9 @@ class admin extends BaseController {
 
     public function delete($id){
         try{
-            candidate::find($id)->delete();
+            $candidate = candidate::findOrFail($id);
+            if($candidate->regis_type == 1) throw new Exception("副會長候選人無法刪除，請刪除對應之會長候選人");
+            $candidate->delete();
             Session::set('msg',"刪除成功");
             Session::set('msg_status',"success");
         }catch(Exception $e){
